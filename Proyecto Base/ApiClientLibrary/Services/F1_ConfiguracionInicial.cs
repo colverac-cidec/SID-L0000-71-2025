@@ -49,6 +49,22 @@ namespace ApiClientLibrary.Services
             return response;
         }
 
+        public async Task<HttpResponseMessage> RegistrarInstrumento(InstrumentoDTO instrumento)
+        {
+            var json = JsonSerializer.Serialize(instrumento);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync("InstrumentoDTO", content);
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> RegistrarPrototipos(PrototiposDTO prototipo)
+        {
+            var json = JsonSerializer.Serialize(prototipo);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync("PrototiposDTO", content);
+            return response;
+        }
+
         public async Task<HttpResponseMessage> RegistrarNorma(NormaDTO norma)
         {
             var json = JsonSerializer.Serialize(norma);
@@ -65,11 +81,67 @@ namespace ApiClientLibrary.Services
             return response;
         }
 
+        public async Task<HttpResponseMessage> RegistrarValorReferencia(ValorRefDTO valorRef)
+        {
+            var json = JsonSerializer.Serialize(valorRef);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync("ValorReferencia", content);
+            return response;
+        }
+        
+
         public async Task<HttpResponseMessage> RegistrarProductos(ProductosDTO productos)
         {
             var json = JsonSerializer.Serialize(productos);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await _httpClient.PostAsync("Productos", content);
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> RegistrarContratos(ContratosDTO contratos)
+        {
+            var json = JsonSerializer.Serialize(contratos);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync("Contratos", content);
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> RegistrarOrdenFabricacion(OrdenFabricacionDTO ordenFabricacion)
+        {
+            var json = JsonSerializer.Serialize(ordenFabricacion);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync("OrdenFabricacion", content);
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> RegistrarExpedientePruebas(ExpedientePruebaDTO expedientePrueba)
+        {
+            var json = JsonSerializer.Serialize(expedientePrueba);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync("ExpedientePruebas", content);
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> RegistrarResultadoPruebas(ResultadoPruebasDTO resultadoPruebas)
+        {
+            var json = JsonSerializer.Serialize(resultadoPruebas);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync("AgregaResultadoPrueba", content);
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> TerminaPruebaExpediente(TerminaPruebaExpedienteDTO terminaPruebaExpediente)
+        {
+            var json = JsonSerializer.Serialize(terminaPruebaExpediente);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync("TerminaPruebasExpediente", content);
+            return response;
+        }
+        
+
+        public async Task<HttpResponseMessage> ConsultarNormas()
+        {
+            var response = await _httpClient.GetAsync("Norma");
             return response;
         }
     }
