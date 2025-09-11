@@ -22,7 +22,11 @@ Console.WriteLine("10. Registrar expediente de pruebas");
 Console.WriteLine("11. Registrar Resultado de pruebas");
 Console.WriteLine("12. Termina expediente prueba");
 Console.WriteLine("13. Consulta las normas");
-Console.Write("Selecciona una opción (1-13): ");
+Console.WriteLine("14. Consulta los instrumentos");
+Console.WriteLine("15. Actualizar los instrumentos");
+Console.WriteLine("16. Consulta pruebas");
+Console.WriteLine("17. Consulta prototipo");
+Console.Write("Selecciona una opción (1-16): ");
 
 string opcion = Console.ReadLine();
 
@@ -41,11 +45,11 @@ switch (opcion)
         var instrumentoResponse = await apiClient.RegistrarInstrumento(new InstrumentoDTO
         {
             id = "",
-            nombre = "Vernier V-022",
-            numeroSerie = "V-022",
-            fechaCalibracion = DateTime.Parse("2025-09-09T17:32:28.749Z"),
+            nombre = "micro-ohmetro digital ",
+            numeroSerie = "TUG098722",
+            fechaCalibracion = DateTime.Parse("2025-09-11T17:32:28.749Z"),
             fechaVencimientoCalibracion = DateTime.Parse("2025-09-09T17:32:28.749Z"),
-            urlArchivo = "https://www.cenam.mx/publicaciones/descargas/PDFFiles/usodecertificados.pdf",
+            urlArchivo = "http://10.44.6.50/sid_capacitacion/swagger/index.html",
             mD5 = "",
             estatus = "VIGENTE", 
 
@@ -59,10 +63,10 @@ switch (opcion)
         var prototipoResponse = await apiClient.RegistrarPrototipos(new PrototiposDTO
         {
             id = "",
-            numero = "Vernier V-022",
+            numero = "K311D-24-E/4951",
             fechaEmision = DateTime.Parse("2025-09-09T17:32:28.749Z"),
-            fechaVencimiento = DateTime.Parse("2025-09-09T17:32:28.749Z"),
-            urlArchivo = "https://www.cenam.mx/publicaciones/descargas/PDFFiles/usodecertificados.pdf",
+            fechaVencimiento = DateTime.Parse("2025-10-09T17:32:28.749Z"),
+            urlArchivo = "http://10.44.6.50/sid_capacitacion/swagger/index.html",
             mD5 = "",
             estatus = "VIGENTE",
         });
@@ -75,10 +79,10 @@ switch (opcion)
         {
             id = "",
             idProducto = "68c06ed2c55c585f0beafeb5",
-            idPrueba = "68c06badc55c585f0beafe95",
+            idPrueba = "68c2fd605006ea4012083890",
             valor = 0,
             valor2 = 0,
-            unidad = "adimensional",
+            unidad = "No aplica",
             comparacion = "NO_COMPARAR",
 
 
@@ -91,18 +95,19 @@ switch (opcion)
         var productosResponse = await apiClient.RegistrarProductos(new ProductosDTO
         {
             id = "",
-            codigoFabricante = "J117",
-            descripcion = "CABLE CU (350) - XLP-5-133",
-            descripcionCorta = "VENTILADOR P/TRANSFORMADOR",
+            codigoFabricante = "J007",
+            descripcion = "CABLE DE COBRE SEMIDURO DESNUDO CCN 1/0 AWG 7H",
+            descripcionCorta = "CABLE CU 1/0",
             tipoFabricacion = "LOTE",
             unidad = "m",
-            norma = "68c06a36c55c585f0beafe79",
-            prototipo = "68c06930c55c585f0beafe6a",
+            norma = "68c317cddc75889685df3aba",
+            prototipo = "68c3182ddc75889685df3abd",
             estatus = "ACTIVO",
             Pruebas = new List<string>
            {
-               "68c06badc55c585f0beafe95",
-               "68c06c53c55c585f0beafea1"
+               "68c318b7dc75889685df3ac2",
+               "68c318c4dc75889685df3ac3",
+               "68c318e3dc75889685df3ac4"
            }
 
 
@@ -115,9 +120,9 @@ switch (opcion)
         var normaResponse = await apiClient.RegistrarNorma(new NormaDTO
         {
             id = "",
-            clave = "E0000-04",
-            nombre = "CONDUCTORES DUPLEX",
-            edicion = "SEPTIEMBRE 2011",
+            clave = "CFE E0000-32",
+            nombre = "ALAMBRE Y CABLE DE COBRE SEMIDURO DESNUDO",
+            edicion = "2020",
             estatus = "VIGENTE",
             esCFE = true,
         });
@@ -129,7 +134,9 @@ switch (opcion)
         var pruebaResponse = await apiClient.RegistrarPruebas(new PruebaDTO
         {
             id = "",
-            nombre = "Pruebas de alta tensión",
+            //nombre = "Resistividad volumetrica a 20°C",
+            //nombre = "Valor nominal de masa",
+            nombre = "inspeccion Visual",
             estatus = "ACTIVA",
             tipoPrueba = "ACEPTACION",
             tipoResultado = "VALOR_REFERENCIA",
@@ -141,31 +148,34 @@ switch (opcion)
     case "8":
         var contratosResponse = await apiClient.RegistrarContratos(new ContratosDTO
         {
-            Tipo = "ContratoParticular",
+            Tipo = "ContratoCFE",
             id = "",
-            tipoContrato = "ContratoParticular",
-            noContrato = "6875686",
-            estatus = "ACTIVO", 
-            detalleContratoDTO = new List<DetalleContratoDTO>
-        {
+            tipoContrato = "ContratoCFE",
+            noContrato = "9100026917",
+            estatus = "ACTIVO",
+            detalleContrato = new List<DetalleContratoDTO>
+
+        {   
             new DetalleContratoDTO
             {
-                partidaContrato = "1",
-                descripcionAviso = "CABLE MULTIPLE AAC-AAC (1+1)6",
-                cantidad = 10,
+                partidaContrato = "838",
+                descripcionAviso = "CABLE DE COBRE SEMIDURO DESNUDO CCN 1/0 AWG 7H",
+                cantidad = 1,
                 unidad = "m",
-                importeTotal = 0
+                importeTotal = 282055
             },
             new DetalleContratoDTO
             {
-                partidaContrato = "2",
-                descripcionAviso = "CABLE MULTIPLE AAC-AAC (1+1)6",
-                cantidad = 5,
+                partidaContrato = "864",
+                descripcionAviso = "CABLE DE COBRE SEMIDURO DESNUDO CCN 1/0 AWG 7H",
+                cantidad = 2,
                 unidad = "m",
-                importeTotal = 0
+                importeTotal = 302055
             }
         },
-            fechaEntregaCFE = DateTime.Parse("2025-09-09T17:32:28.749Z"),
+            urlArchivo = "http://10.44.6.50/sid_capacitacion/swagger/index.html",
+            mD5 = "",
+            fechaEntregaCFE = DateTime.Parse("2025-09-11T17:32:28.749Z"),
         });
         Console.WriteLine($"Respuesta Prueba: {contratosResponse}");
         respuesta += contratosResponse;
@@ -285,9 +295,154 @@ switch (opcion)
 
         break;
 
+    case "14":
+        var responseIntrumentos = await apiClient.ConsultarInstrumento();
 
+        if (responseIntrumentos.IsSuccessStatusCode)
+        {
+            var jsonInstrumento = await responseIntrumentos.Content.ReadAsStringAsync();
+            var instrumentos = JsonConvert.DeserializeObject<List<InstrumentoDTO>>(jsonInstrumento);
 
+            Console.WriteLine("Normas encontradas:");
+            foreach (var instrumento in instrumentos)
+            {
+                Console.WriteLine($"ID: {instrumento.id}");
+                Console.WriteLine($"Clave: {instrumento.nombre}");
+                Console.WriteLine($"Nombre: {instrumento.numeroSerie}");
+                Console.WriteLine($"Edición: {instrumento.fechaCalibracion}");
+                Console.WriteLine($"Estatus: {instrumento.fechaVencimientoCalibracion}");
+                Console.WriteLine($"Es CFE: {instrumento.urlArchivo}");
+                Console.WriteLine($"Fecha Registro: {instrumento.mD5}");
+                Console.WriteLine($"Es CFE: {instrumento.estatus}");
+                Console.WriteLine($"Fecha Registro: {instrumento.fechaRegistro}");
+                Console.WriteLine(new string('-', 40));
+            }
 
+            respuesta += $"Se consultaron {instrumentos.Count} normas.";
+        }
+        else
+        {
+            Console.WriteLine("Error al consultar instrumentos.");
+            respuesta += "Error al consultar instrumentos.";
+        }
+
+        break;
+
+    case "15":
+        var instrumentoActResponse = await apiClient.ActualizarInstrumento(new InstrumentoDTO
+        {
+            id = "68c06579c55c585f0beafe44",
+            nombre = "Vernier V-022",
+            numeroSerie = "V-022",
+            fechaCalibracion = DateTime.Parse("2025-09-09T17:32:28.749Z"),
+            fechaVencimientoCalibracion = DateTime.Parse("2025-09-09T17:32:28.749Z"),
+            urlArchivo = "https://www.cenam.mx/publicaciones/descargas/PDFFiles/usodecertificados.pdf",
+            mD5 = "",
+            estatus = "VIGENTE",
+
+        });
+        Console.WriteLine($"Respuesta Instrumento: {instrumentoActResponse}");
+        respuesta += instrumentoActResponse;
+        break;
+
+    case "16":
+        var responsePruebas = await apiClient.ConsultarPruebas();
+
+        if (responsePruebas.IsSuccessStatusCode)
+        {
+            var jsonPruebas = await responsePruebas.Content.ReadAsStringAsync();
+            var Pruebas = JsonConvert.DeserializeObject<List<InstrumentoDTO>>(jsonPruebas);
+
+            Console.WriteLine("Normas encontradas:");
+            foreach (var prueba in Pruebas)
+            {
+                Console.WriteLine($"ID: {prueba.id}");
+                //Console.WriteLine($"Clave: {instrumento.nombre}");
+                //Console.WriteLine($"Nombre: {instrumento.numeroSerie}");
+                //Console.WriteLine($"Edición: {instrumento.fechaCalibracion}");
+                //Console.WriteLine($"Estatus: {instrumento.fechaVencimientoCalibracion}");
+                //Console.WriteLine($"Es CFE: {instrumento.urlArchivo}");
+                //Console.WriteLine($"Fecha Registro: {instrumento.mD5}");
+                //Console.WriteLine($"Es CFE: {instrumento.estatus}");
+                //Console.WriteLine($"Fecha Registro: {instrumento.fechaRegistro}");
+                Console.WriteLine(new string('-', 40));
+            }
+
+            respuesta += $"Se consultaron {Pruebas.Count} pruebas.";
+        }
+        else
+        {
+            Console.WriteLine("Error al consultar pruebas.");
+            respuesta += "Error al consultar pruebas.";
+        }
+
+        break;
+
+    case "17":
+        var responsePrt = await apiClient.ConsultarPrototiop();
+
+        if (responsePrt.IsSuccessStatusCode)
+        {
+            var jsonPruebas = await responsePrt.Content.ReadAsStringAsync();
+            var Prueptobas = JsonConvert.DeserializeObject<List<InstrumentoDTO>>(jsonPruebas);
+
+            Console.WriteLine("Normas encontradas:");
+            foreach (var prueba in Prueptobas)
+            {
+                Console.WriteLine($"ID: {prueba.id}");
+                //Console.WriteLine($"Clave: {instrumento.nombre}");
+                //Console.WriteLine($"Nombre: {instrumento.numeroSerie}");
+                //Console.WriteLine($"Edición: {instrumento.fechaCalibracion}");
+                //Console.WriteLine($"Estatus: {instrumento.fechaVencimientoCalibracion}");
+                //Console.WriteLine($"Es CFE: {instrumento.urlArchivo}");
+                //Console.WriteLine($"Fecha Registro: {instrumento.mD5}");
+                //Console.WriteLine($"Es CFE: {instrumento.estatus}");
+                //Console.WriteLine($"Fecha Registro: {instrumento.fechaRegistro}");
+                Console.WriteLine(new string('-', 40));
+            }
+
+            respuesta += $"Se consultaron {Prueptobas.Count} pruebas.";
+        }
+        else
+        {
+            Console.WriteLine("Error al consultar pruebas.");
+            respuesta += "Error al consultar pruebas.";
+        }
+
+        break;
+
+    //case "16":
+    //    var responsePrototipo = await apiClient.ConsultarPrototipo();
+
+    //    if (responsePrototipo.IsSuccessStatusCode)
+    //    {
+    //        var jsonPrototipos = await responsePrototipo.Content.ReadAsStringAsync();
+    //        var prototipos = JsonConvert.DeserializeObject<List<InstrumentoDTO>>(jsonPrototipos);
+
+    //        Console.WriteLine("Normas encontradas:");
+    //        foreach (var prototipo in prototipos)
+    //        {
+    //            Console.WriteLine($"ID: {instrumento.id}");
+    //            Console.WriteLine($"Clave: {instrumento.nombre}");
+    //            Console.WriteLine($"Nombre: {instrumento.numeroSerie}");
+    //            Console.WriteLine($"Edición: {instrumento.fechaCalibracion}");
+    //            Console.WriteLine($"Estatus: {instrumento.fechaVencimientoCalibracion}");
+    //            Console.WriteLine($"Es CFE: {instrumento.urlArchivo}");
+    //            Console.WriteLine($"Fecha Registro: {instrumento.mD5}");
+    //            Console.WriteLine($"Es CFE: {instrumento.estatus}");
+    //            Console.WriteLine($"Fecha Registro: {instrumento.fechaRegistro}");
+    //            Console.WriteLine(new string('-', 40));
+    //        }
+
+    //        respuesta += $"Se consultaron {instrumentos.Count} normas.";
+    //    }
+    //    else
+    //    {
+    //        Console.WriteLine("Error al consultar instrumentos.");
+    //        respuesta += "Error al consultar instrumentos.";
+    //    }
+
+    //    break;
 
     default:
         Console.WriteLine("Opción no válida. Intenta de nuevo.");

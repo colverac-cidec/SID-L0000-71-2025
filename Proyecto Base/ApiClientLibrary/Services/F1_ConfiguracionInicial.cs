@@ -53,7 +53,7 @@ namespace ApiClientLibrary.Services
         {
             var json = JsonSerializer.Serialize(instrumento);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("InstrumentoDTO", content);
+            var response = await _httpClient.PostAsync("Instrumento", content);
             return response;
         }
 
@@ -61,7 +61,7 @@ namespace ApiClientLibrary.Services
         {
             var json = JsonSerializer.Serialize(prototipo);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("PrototiposDTO", content);
+            var response = await _httpClient.PostAsync("Prototipo", content);
             return response;
         }
 
@@ -94,7 +94,7 @@ namespace ApiClientLibrary.Services
         {
             var json = JsonSerializer.Serialize(productos);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("Productos", content);
+            var response = await _httpClient.PostAsync("Producto", content);
             return response;
         }
 
@@ -142,6 +142,33 @@ namespace ApiClientLibrary.Services
         public async Task<HttpResponseMessage> ConsultarNormas()
         {
             var response = await _httpClient.GetAsync("Norma");
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> ConsultarInstrumento()
+        {
+            var response = await _httpClient.GetAsync("Instrumento");
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> ConsultarPruebas()
+        {
+            var response = await _httpClient.GetAsync("Prueba");
+            return response;
+        }
+
+
+        public async Task<HttpResponseMessage> ConsultarPrototiop()
+        {
+            var response = await _httpClient.GetAsync("Prototipo");
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> ActualizarInstrumento(InstrumentoDTO instrumento)
+        {
+            var json = JsonSerializer.Serialize(instrumento);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PutAsync("InstrumentoDTO", content);
             return response;
         }
     }

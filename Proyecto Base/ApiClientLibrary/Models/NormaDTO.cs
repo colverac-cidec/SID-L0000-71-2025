@@ -18,5 +18,6 @@ namespace ApiClientLibrary.Models
         public DateTime fechaRegistro { get; set; } = DateTime.Now;
     }
 
+
+
 }
-        
