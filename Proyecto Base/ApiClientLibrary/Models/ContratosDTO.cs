@@ -34,27 +34,14 @@ namespace ApiClientLibrary.Models
     }
 
 
+    public class ContratosResponseDTO
+    {
+        public int total { get; set; }
+        public int paginaActual { get; set; }
+        public int tamañoPagina { get; set; }
+        public List<ContratosDTO> contratos { get; set; }
+    }
 
-       //public class ContratosDTO
-       // {
-       //     [JsonProperty("$Tipo")]
-       //     public string Tipo { get; set; }
 
-       //     public string id { get; set; }
-       //     public string tipoContrato { get; set; }
-       //     public string noContrato { get; set; }
-       //     public string estatus { get; set; }
-       //     public List<DetalleContratoDTO> detalleContrato { get; set; }
-       //     public DateTime fechaEntregaCFE { get; set; }
-       // }
-
-       // public class DetalleContratoDTO
-       // {
-       //     public string partidaContrato { get; set; }
-       //     public string descripcionAviso { get; set; }
-       //     public int cantidad { get; set; }
-       //     public string unidad { get; set; }
-       //     public decimal importeTotal { get; set; }
-       // }
 
 }

@@ -6,27 +6,34 @@ using System.Security.Cryptography;
 using Newtonsoft.Json;
 
 F1_ConfiguracionInicial apiClient = new F1_ConfiguracionInicial();
+F2_PreparacionFabricacion apiClientPreparacion = new F2_PreparacionFabricacion();
+F3_Pruebas apiClientPruebas = new F3_Pruebas();
 string respuesta = "";
 
 Console.WriteLine("¿Qué operación POST deseas realizar?");
-Console.WriteLine("1. Registrar EstadoSID");
-Console.WriteLine("2. Registrar Instrumento");
-Console.WriteLine("3. Registrar Prototipo");
-Console.WriteLine("4. Registrar Valor de referencia");
-Console.WriteLine("5. Registrar Producto");
-Console.WriteLine("6. Registrar Norma");
-Console.WriteLine("7. Registrar Prueba");
-Console.WriteLine("8. Registrar Contrato");
-Console.WriteLine("9. Registrar Orden Fabricación");
-Console.WriteLine("10. Registrar expediente de pruebas");
-Console.WriteLine("11. Registrar Resultado de pruebas");
-Console.WriteLine("12. Termina expediente prueba");
-Console.WriteLine("13. Consulta las normas");
-Console.WriteLine("14. Consulta los instrumentos");
-Console.WriteLine("15. Actualizar los instrumentos");
-Console.WriteLine("16. Consulta pruebas");
-Console.WriteLine("17. Consulta prototipo");
-Console.Write("Selecciona una opción (1-16): ");
+Console.WriteLine("1. Registrar EstadoSID");//1
+Console.WriteLine("2. Registrar Instrumento");//1
+Console.WriteLine("3. Registrar Prototipo");//1
+Console.WriteLine("4. Registrar Valor de referencia");//1
+Console.WriteLine("5. Registrar Producto");//1
+Console.WriteLine("6. Registrar Norma");//1
+Console.WriteLine("7. Registrar Prueba");//1
+Console.WriteLine("8. Registrar Contrato"); //2
+Console.WriteLine("9. Registrar Orden Fabricación");//2
+Console.WriteLine("10. Registrar expediente de pruebas");//2
+Console.WriteLine("11. Registrar Resultado de pruebas");//3
+Console.WriteLine("12. Termina expediente prueba");//3
+Console.WriteLine("13. Actualizar los instrumentos");//1
+Console.WriteLine("14. Consulta las normas");//1
+Console.WriteLine("15. Consulta los instrumentos");//1
+Console.WriteLine("16. Consulta pruebas");//1
+Console.WriteLine("17. Consulta prototipos");//1
+Console.WriteLine("18. Consulta Valor de Referencias");//1
+Console.WriteLine("19. Consulta Productos");//1
+Console.WriteLine("20. Consulta Contratos");//2
+Console.WriteLine("21. Consulta Orden de fabricación");//2
+Console.WriteLine("22. Consulta expediente de pruebas");//2
+Console.Write("Selecciona una opción (1-22): ");
 
 string opcion = Console.ReadLine();
 
@@ -146,7 +153,7 @@ switch (opcion)
         break;
 
     case "8":
-        var contratosResponse = await apiClient.RegistrarContratos(new ContratosDTO
+        var contratosResponse = await apiClientPreparacion.RegistrarContratos(new ContratosDTO
         {
             Tipo = "ContratoCFE",
             id = "",
@@ -182,7 +189,7 @@ switch (opcion)
         break;
 
     case "9":
-        var ordenFabricacionResponse = await apiClient.RegistrarOrdenFabricacion(new OrdenFabricacionDTO
+        var ordenFabricacionResponse = await apiClientPreparacion.RegistrarOrdenFabricacion(new OrdenFabricacionDTO
         {
             id = "",
             claveOrdenFabricacion = "110300023842",
@@ -219,7 +226,7 @@ switch (opcion)
         break;
 
     case "10":
-        var expedientePruebasResponse = await apiClient.RegistrarExpedientePruebas(new ExpedientePruebaDTO
+        var expedientePruebasResponse = await apiClientPreparacion.RegistrarExpedientePruebas(new ExpedientePruebaDTO
         {
             id = "68c198379d5906a9d9911d6a",
             claveExpediente = "MI-EXP-CIDEC-2025",
@@ -234,7 +241,7 @@ switch (opcion)
         break;
 
     case "11":
-        var resultadoPruebasResponse = await apiClient.RegistrarResultadoPruebas(new ResultadoPruebasDTO
+        var resultadoPruebasResponse = await apiClientPruebas.RegistrarResultadoPruebas(new ResultadoPruebasDTO
         {
             expediente = "68c198379d5906a9d9911d6a",
             muestra = "MI-EXP-CIDEC-2025",
@@ -255,7 +262,7 @@ switch (opcion)
         break;
 
     case "12":
-        var resultadoTerminaPruebaExpedienteResponse = await apiClient.TerminaPruebaExpediente(new TerminaPruebaExpedienteDTO
+        var resultadoTerminaPruebaExpedienteResponse = await apiClientPruebas.TerminaPruebaExpediente(new TerminaPruebaExpedienteDTO
         {
             Expediente = "MI-EXP-CIDEC-2025",
 
@@ -265,6 +272,23 @@ switch (opcion)
         break;
 
     case "13":
+        var instrumentoActResponse = await apiClient.ActualizarInstrumento(new InstrumentoDTO
+        {
+            id = "68c06579c55c585f0beafe44",
+            nombre = "Vernier V-022",
+            numeroSerie = "V-022",
+            fechaCalibracion = DateTime.Parse("2025-09-09T17:32:28.749Z"),
+            fechaVencimientoCalibracion = DateTime.Parse("2025-09-09T17:32:28.749Z"),
+            urlArchivo = "https://www.cenam.mx/publicaciones/descargas/PDFFiles/usodecertificados.pdf",
+            mD5 = "",
+            estatus = "VIGENTE",
+
+        });
+        Console.WriteLine($"Respuesta Instrumento: {instrumentoActResponse}");
+        respuesta += instrumentoActResponse;
+        break;
+
+    case "14":
         var responseNormas = await apiClient.ConsultarNormas();
 
         if (responseNormas.IsSuccessStatusCode)
@@ -295,7 +319,7 @@ switch (opcion)
 
         break;
 
-    case "14":
+    case "15":
         var responseIntrumentos = await apiClient.ConsultarInstrumento();
 
         if (responseIntrumentos.IsSuccessStatusCode)
@@ -303,17 +327,17 @@ switch (opcion)
             var jsonInstrumento = await responseIntrumentos.Content.ReadAsStringAsync();
             var instrumentos = JsonConvert.DeserializeObject<List<InstrumentoDTO>>(jsonInstrumento);
 
-            Console.WriteLine("Normas encontradas:");
+            Console.WriteLine("Instrumentos encontradas:");
             foreach (var instrumento in instrumentos)
             {
                 Console.WriteLine($"ID: {instrumento.id}");
-                Console.WriteLine($"Clave: {instrumento.nombre}");
-                Console.WriteLine($"Nombre: {instrumento.numeroSerie}");
-                Console.WriteLine($"Edición: {instrumento.fechaCalibracion}");
-                Console.WriteLine($"Estatus: {instrumento.fechaVencimientoCalibracion}");
-                Console.WriteLine($"Es CFE: {instrumento.urlArchivo}");
-                Console.WriteLine($"Fecha Registro: {instrumento.mD5}");
-                Console.WriteLine($"Es CFE: {instrumento.estatus}");
+                Console.WriteLine($"nombre: {instrumento.nombre}");
+                Console.WriteLine($"numeroSerie: {instrumento.numeroSerie}");
+                Console.WriteLine($"fechaCalibracion: {instrumento.fechaCalibracion}");
+                Console.WriteLine($"fechaVencimientoCalibracion: {instrumento.fechaVencimientoCalibracion}");
+                Console.WriteLine($"urlArchivo: {instrumento.urlArchivo}");
+                Console.WriteLine($"mD5: {instrumento.mD5}");
+                Console.WriteLine($"estatus: {instrumento.estatus}");
                 Console.WriteLine($"Fecha Registro: {instrumento.fechaRegistro}");
                 Console.WriteLine(new string('-', 40));
             }
@@ -328,22 +352,7 @@ switch (opcion)
 
         break;
 
-    case "15":
-        var instrumentoActResponse = await apiClient.ActualizarInstrumento(new InstrumentoDTO
-        {
-            id = "68c06579c55c585f0beafe44",
-            nombre = "Vernier V-022",
-            numeroSerie = "V-022",
-            fechaCalibracion = DateTime.Parse("2025-09-09T17:32:28.749Z"),
-            fechaVencimientoCalibracion = DateTime.Parse("2025-09-09T17:32:28.749Z"),
-            urlArchivo = "https://www.cenam.mx/publicaciones/descargas/PDFFiles/usodecertificados.pdf",
-            mD5 = "",
-            estatus = "VIGENTE",
 
-        });
-        Console.WriteLine($"Respuesta Instrumento: {instrumentoActResponse}");
-        respuesta += instrumentoActResponse;
-        break;
 
     case "16":
         var responsePruebas = await apiClient.ConsultarPruebas();
@@ -351,20 +360,17 @@ switch (opcion)
         if (responsePruebas.IsSuccessStatusCode)
         {
             var jsonPruebas = await responsePruebas.Content.ReadAsStringAsync();
-            var Pruebas = JsonConvert.DeserializeObject<List<InstrumentoDTO>>(jsonPruebas);
+            var Pruebas = JsonConvert.DeserializeObject<List<PruebaDTO>>(jsonPruebas);
 
-            Console.WriteLine("Normas encontradas:");
+            Console.WriteLine("Pruebas encontradas:");
             foreach (var prueba in Pruebas)
             {
                 Console.WriteLine($"ID: {prueba.id}");
-                //Console.WriteLine($"Clave: {instrumento.nombre}");
-                //Console.WriteLine($"Nombre: {instrumento.numeroSerie}");
-                //Console.WriteLine($"Edición: {instrumento.fechaCalibracion}");
-                //Console.WriteLine($"Estatus: {instrumento.fechaVencimientoCalibracion}");
-                //Console.WriteLine($"Es CFE: {instrumento.urlArchivo}");
-                //Console.WriteLine($"Fecha Registro: {instrumento.mD5}");
-                //Console.WriteLine($"Es CFE: {instrumento.estatus}");
-                //Console.WriteLine($"Fecha Registro: {instrumento.fechaRegistro}");
+                Console.WriteLine($"Nombre: {prueba.nombre}");
+                Console.WriteLine($"estatus: {prueba.estatus}");
+                Console.WriteLine($"TipoPrueba: {prueba.tipoPrueba}");
+                Console.WriteLine($"TipoRes: {prueba.tipoResultado}");
+                Console.WriteLine($"FechaReg: {prueba.fechaRegistro}");
                 Console.WriteLine(new string('-', 40));
             }
 
@@ -379,70 +385,236 @@ switch (opcion)
         break;
 
     case "17":
-        var responsePrt = await apiClient.ConsultarPrototiop();
+        var responsePrototipo = await apiClient.ConsultarPrototiop();
 
-        if (responsePrt.IsSuccessStatusCode)
+        if (responsePrototipo.IsSuccessStatusCode)
         {
-            var jsonPruebas = await responsePrt.Content.ReadAsStringAsync();
-            var Prueptobas = JsonConvert.DeserializeObject<List<InstrumentoDTO>>(jsonPruebas);
+            var jsonPrototipo = await responsePrototipo.Content.ReadAsStringAsync();
+            var Prototipos = JsonConvert.DeserializeObject<List<PrototiposDTO>>(jsonPrototipo);
 
-            Console.WriteLine("Normas encontradas:");
-            foreach (var prueba in Prueptobas)
+            Console.WriteLine("Prototipos encontradas:");
+            foreach (var protipo in Prototipos)
             {
-                Console.WriteLine($"ID: {prueba.id}");
-                //Console.WriteLine($"Clave: {instrumento.nombre}");
-                //Console.WriteLine($"Nombre: {instrumento.numeroSerie}");
-                //Console.WriteLine($"Edición: {instrumento.fechaCalibracion}");
-                //Console.WriteLine($"Estatus: {instrumento.fechaVencimientoCalibracion}");
-                //Console.WriteLine($"Es CFE: {instrumento.urlArchivo}");
-                //Console.WriteLine($"Fecha Registro: {instrumento.mD5}");
-                //Console.WriteLine($"Es CFE: {instrumento.estatus}");
-                //Console.WriteLine($"Fecha Registro: {instrumento.fechaRegistro}");
+                Console.WriteLine($"ID: {protipo.id}");
+                Console.WriteLine($"numero: {protipo.numero}");
+                Console.WriteLine($"fechaEmision: {protipo.fechaEmision}");
+                Console.WriteLine($"fechaVencimiento: {protipo.fechaVencimiento}");
+                Console.WriteLine($"urlArchivo: {protipo.urlArchivo}");
+                Console.WriteLine($"mD5: {protipo.mD5}");
+                Console.WriteLine($"estatus: {protipo.estatus}");
+                Console.WriteLine($"Fecha Registro: {protipo.fechaRegistro}");
                 Console.WriteLine(new string('-', 40));
             }
 
-            respuesta += $"Se consultaron {Prueptobas.Count} pruebas.";
+            respuesta += $"Se consultaron {Prototipos.Count} protipo.";
         }
         else
         {
-            Console.WriteLine("Error al consultar pruebas.");
-            respuesta += "Error al consultar pruebas.";
+            Console.WriteLine("Error al consultar protipo.");
+            respuesta += "Error al consultar protipo.";
         }
 
         break;
 
-    //case "16":
-    //    var responsePrototipo = await apiClient.ConsultarPrototipo();
+    case "18":
+        var responseValorReferencia = await apiClient.ConsultarValorReferencia();
 
-    //    if (responsePrototipo.IsSuccessStatusCode)
-    //    {
-    //        var jsonPrototipos = await responsePrototipo.Content.ReadAsStringAsync();
-    //        var prototipos = JsonConvert.DeserializeObject<List<InstrumentoDTO>>(jsonPrototipos);
+        if (responseValorReferencia.IsSuccessStatusCode)
+        {
+            var jsonValorReferencia = await responseValorReferencia.Content.ReadAsStringAsync();
+            var ValorReferencias = JsonConvert.DeserializeObject<List<ValorRefDTO>>(jsonValorReferencia);
 
-    //        Console.WriteLine("Normas encontradas:");
-    //        foreach (var prototipo in prototipos)
-    //        {
-    //            Console.WriteLine($"ID: {instrumento.id}");
-    //            Console.WriteLine($"Clave: {instrumento.nombre}");
-    //            Console.WriteLine($"Nombre: {instrumento.numeroSerie}");
-    //            Console.WriteLine($"Edición: {instrumento.fechaCalibracion}");
-    //            Console.WriteLine($"Estatus: {instrumento.fechaVencimientoCalibracion}");
-    //            Console.WriteLine($"Es CFE: {instrumento.urlArchivo}");
-    //            Console.WriteLine($"Fecha Registro: {instrumento.mD5}");
-    //            Console.WriteLine($"Es CFE: {instrumento.estatus}");
-    //            Console.WriteLine($"Fecha Registro: {instrumento.fechaRegistro}");
-    //            Console.WriteLine(new string('-', 40));
-    //        }
+            Console.WriteLine("Valor de referencias encontradas:");
+            foreach (var valRef in ValorReferencias)
+            {
+                Console.WriteLine($"ID: {valRef.id}");
+                Console.WriteLine($"numero: {valRef.idProducto}");
+                Console.WriteLine($"fechaEmision: {valRef.idPrueba}");
+                Console.WriteLine($"fechaVencimiento: {valRef.valor}");
+                Console.WriteLine($"urlArchivo: {valRef.valor2}");
+                Console.WriteLine($"mD5: {valRef.unidad}");
+                Console.WriteLine($"estatus: {valRef.comparacion}");
+                Console.WriteLine($"Fecha Registro: {valRef.fechaRegistro}");
+                Console.WriteLine(new string('-', 40));
+            }
 
-    //        respuesta += $"Se consultaron {instrumentos.Count} normas.";
-    //    }
-    //    else
-    //    {
-    //        Console.WriteLine("Error al consultar instrumentos.");
-    //        respuesta += "Error al consultar instrumentos.";
-    //    }
+            respuesta += $"Se consultaron {ValorReferencias.Count} ValorRef.";
+        }
+        else
+        {
+            Console.WriteLine("Error al consultar valorRef.");
+            respuesta += "Error al consultar valorRef.";
+        }
 
-    //    break;
+        break;
+
+    case "19":
+        var responseProducto = await apiClient.ConsultarProducto();
+
+        if (responseProducto.IsSuccessStatusCode)
+        {
+            var jsonProducto = await responseProducto.Content.ReadAsStringAsync();
+            var Productos = JsonConvert.DeserializeObject<List<ProductosDTO>>(jsonProducto);
+
+            Console.WriteLine("Productos encontradas:");
+            foreach (var producto in Productos)
+            {
+                Console.WriteLine($"ID: {producto.id}");
+                Console.WriteLine($"codigoFabricante: {producto.codigoFabricante}");
+                Console.WriteLine($"descripcion: {producto.descripcion}");
+                Console.WriteLine($"descripcionCorta: {producto.descripcionCorta}");
+                Console.WriteLine($"tipoFabricacion: {producto.tipoFabricacion}");
+                Console.WriteLine($"unidad: {producto.unidad}");
+                Console.WriteLine($"norma: {producto.norma}");
+                Console.WriteLine($"prototipo: {producto.prototipo}");
+                Console.WriteLine($"estatus: {producto.estatus}");
+                Console.WriteLine($"Fecha Registro: {producto.fechaRegistro}");
+                Console.WriteLine($"Pruebas: {producto.Pruebas}");
+                Console.WriteLine(new string('-', 40));
+            }
+
+            respuesta += $"Se consultaron {Productos.Count} Productos.";
+        }
+        else
+        {
+            Console.WriteLine("Error al consultar Productos.");
+            respuesta += "Error al consultar Productos.";
+        }
+
+        break;
+
+    case "20":
+        var responseContratos= await apiClientPreparacion.ConsultarContratos();
+        //var responseContratos = await apiClient.ConsultarContratos(pageNumber: 1, pageSize: 10);
+
+        if (responseContratos.IsSuccessStatusCode)
+        {
+            var jsonContratos = await responseContratos.Content.ReadAsStringAsync();
+            var contratosResponse2 = JsonConvert.DeserializeObject<ContratosResponseDTO>(jsonContratos);
+            var Contratos = contratosResponse2.contratos;
+
+            Console.WriteLine("Contratos encontradas:");
+            foreach (var contrato in Contratos)
+            {
+                Console.WriteLine($"Tipo: {contrato.Tipo}");
+                Console.WriteLine($"ID: {contrato.id}");
+                Console.WriteLine($"Tipo de Contrato: {contrato.tipoContrato}");
+                Console.WriteLine($"Número de Contrato: {contrato.noContrato}");
+                Console.WriteLine($"Estatus: {contrato.estatus}");
+                Console.WriteLine($"Fecha de Entrega CFE: {contrato.fechaEntregaCFE}");
+                Console.WriteLine($"URL Archivo: {contrato.urlArchivo}");
+                Console.WriteLine($"MD5: {contrato.mD5}");
+
+                Console.WriteLine("Detalle del contrato:");
+                foreach (var detalle in contrato.detalleContrato)
+                {
+                    Console.WriteLine($"  Partida: {detalle.partidaContrato}");
+                    Console.WriteLine($"  Descripción: {detalle.descripcionAviso}");
+                    Console.WriteLine($"  Cantidad: {detalle.cantidad}");
+                    Console.WriteLine($"  Unidad: {detalle.unidad}");
+                    Console.WriteLine($"  Importe Total: {detalle.importeTotal}");
+                    Console.WriteLine(new string('-', 30));
+                }
+
+                Console.WriteLine(new string('-', 40));
+
+            }
+
+            respuesta += $"Se consultaron {contratosResponse2} Contratos.";
+        }
+        else
+        {
+            Console.WriteLine("Error al consultar contratos.");
+            respuesta += "Error al consultar contratos.";
+        }
+
+        break;
+
+    case "21":
+        var responseOrdenFabricacion = await apiClientPreparacion.ConsultarOrdenFabricacion("68c08fe3c55c585f0beaff37");
+        //var responseContratos = await apiClient.ConsultarContratos(pageNumber: 1, pageSize: 10);
+
+        if (responseOrdenFabricacion.IsSuccessStatusCode)
+        {
+            var jsonOrdenFabricacion = await responseOrdenFabricacion.Content.ReadAsStringAsync();
+            var OrdenFabricacion = JsonConvert.DeserializeObject<List<OrdenFabricacionDTO>>(jsonOrdenFabricacion);
+            //var OrdenFabricacion = JsonConvert.DeserializeObject<OrdenFabricacionDTO>(jsonContratos);
+            //var Contratos = contratosResponse2.contratos;
+
+            Console.WriteLine("Contratos encontradas:");
+            foreach (var orden in OrdenFabricacion)
+            {
+   
+                Console.WriteLine($"ID: {orden.id}");
+                Console.WriteLine($"claveOrdenFabricacion: {orden.claveOrdenFabricacion}");
+                Console.WriteLine($"loteFabricacion: {orden.loteFabricacion}");
+                Console.WriteLine($"idProducto: {orden.idProducto}");
+
+
+                Console.WriteLine("Detalle del contrato:");
+                foreach (var detalle in orden.detalleFabricacion)
+                {
+                    Console.WriteLine($"  Partida: {detalle.contratoId}");
+                    Console.WriteLine($"  Descripción: {detalle.tipoContrato}");
+                    Console.WriteLine($"  Cantidad: {detalle.partidaContratoId}");
+                    Console.WriteLine($"  Unidad: {detalle.descripcionPartida}");
+                    Console.WriteLine($"  Importe Total: {detalle.unidad}");
+                    Console.WriteLine($"  Unidad: {detalle.cantidadOriginalContrato}");
+                    Console.WriteLine($"  Importe Total: {detalle.cantidadAFabricar}");
+                    Console.WriteLine(new string('-', 30));
+                }
+
+                Console.WriteLine(new string('-', 40));
+
+            }
+
+            respuesta += $"Se consultaron {OrdenFabricacion} Orden de fabricación.";
+        }
+        else
+        {
+            Console.WriteLine("Error al consultar Orden de fabricación.");
+            respuesta += "Error al consultar Orden de fabricación.";
+        }
+
+        break;
+
+    case "22":
+        var responseExpedientePruebas = await apiClientPreparacion.ConsultarExpedientePruebas("68c198379d5906a9d9911d6a");
+        //var responseContratos = await apiClient.ConsultarContratos(pageNumber: 1, pageSize: 10);
+
+        if (responseExpedientePruebas.IsSuccessStatusCode)
+        {
+            var jsonOrdenFabricacion = await responseExpedientePruebas.Content.ReadAsStringAsync();
+            var Expedientespruebas = JsonConvert.DeserializeObject<List<ExpedientePruebaDTO>>(jsonOrdenFabricacion);
+            //var OrdenFabricacion = JsonConvert.DeserializeObject<OrdenFabricacionDTO>(jsonContratos);
+            //var Contratos = contratosResponse2.contratos;
+
+            Console.WriteLine("Expedientes pruebas:");
+            foreach (var expe in Expedientespruebas)
+            {
+
+                Console.WriteLine($"ID: {expe.id}");
+                Console.WriteLine($"claveExpediente: {expe.claveExpediente}");
+                Console.WriteLine($"ordenFabricacion: {expe.ordenFabricacion}");
+                Console.WriteLine($"cantidadMuestras: {expe.cantidadMuestras}");
+                Console.WriteLine($"maximoRechazos: {expe.maximoRechazos}");
+                Console.WriteLine($"muestras: {expe.muestras}");
+
+                Console.WriteLine(new string('-', 40));
+
+            }
+
+            respuesta += $"Se consultaron {Expedientespruebas} expedientes pruebas.";
+        }
+        else
+        {
+            Console.WriteLine("Error al consultar expedientes pruebas.");
+            respuesta += "Error al consultar expedientes pruebas.";
+        }
+
+        break;
+
+    
 
     default:
         Console.WriteLine("Opción no válida. Intenta de nuevo.");

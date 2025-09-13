@@ -96,48 +96,7 @@ namespace ApiClientLibrary.Services
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await _httpClient.PostAsync("Producto", content);
             return response;
-        }
-
-        public async Task<HttpResponseMessage> RegistrarContratos(ContratosDTO contratos)
-        {
-            var json = JsonSerializer.Serialize(contratos);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("Contratos", content);
-            return response;
-        }
-
-        public async Task<HttpResponseMessage> RegistrarOrdenFabricacion(OrdenFabricacionDTO ordenFabricacion)
-        {
-            var json = JsonSerializer.Serialize(ordenFabricacion);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("OrdenFabricacion", content);
-            return response;
-        }
-
-        public async Task<HttpResponseMessage> RegistrarExpedientePruebas(ExpedientePruebaDTO expedientePrueba)
-        {
-            var json = JsonSerializer.Serialize(expedientePrueba);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("ExpedientePruebas", content);
-            return response;
-        }
-
-        public async Task<HttpResponseMessage> RegistrarResultadoPruebas(ResultadoPruebasDTO resultadoPruebas)
-        {
-            var json = JsonSerializer.Serialize(resultadoPruebas);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("AgregaResultadoPrueba", content);
-            return response;
-        }
-
-        public async Task<HttpResponseMessage> TerminaPruebaExpediente(TerminaPruebaExpedienteDTO terminaPruebaExpediente)
-        {
-            var json = JsonSerializer.Serialize(terminaPruebaExpediente);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("TerminaPruebasExpediente", content);
-            return response;
-        }
-        
+        }     
 
         public async Task<HttpResponseMessage> ConsultarNormas()
         {
@@ -163,6 +122,20 @@ namespace ApiClientLibrary.Services
             var response = await _httpClient.GetAsync("Prototipo");
             return response;
         }
+
+        public async Task<HttpResponseMessage> ConsultarValorReferencia()
+        {
+            var response = await _httpClient.GetAsync("ValorReferencia");
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> ConsultarProducto()
+        {
+            var response = await _httpClient.GetAsync("Producto");
+            return response;
+        }
+
+
 
         public async Task<HttpResponseMessage> ActualizarInstrumento(InstrumentoDTO instrumento)
         {
