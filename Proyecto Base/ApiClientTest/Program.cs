@@ -40,6 +40,7 @@ Console.WriteLine("19. Consulta Productos");//1
 Console.WriteLine("20. Consulta Contratos");//2
 Console.WriteLine("21. Consulta Orden de fabricación");//2
 Console.WriteLine("22. Consulta expediente de pruebas");//2
+Console.WriteLine("  ");//2
 Console.WriteLine("--Este ultimo es el examne completo--");//2
 Console.WriteLine("25. Registra Examen completo");//2
 Console.Write("Selecciona una opción (1-25): ");
@@ -59,7 +60,7 @@ var IdExpediente = new List<string>();
 
 var claExpediente = "EXP-2025-01984";
 
-string consecutivo = "6";
+string consecutivo = "";
 
 
 switch (opcion)
