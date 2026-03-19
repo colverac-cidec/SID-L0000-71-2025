@@ -28,6 +28,7 @@ namespace ApiClientLibrary.Models
     {
         public string partidaContrato { get; set; }
         public string descripcionAviso { get; set; }
+        public string areaDestinoCFE { get; set; }
         public int cantidad { get; set; }
         public string unidad { get; set; }
         public decimal importeTotal { get; set; }

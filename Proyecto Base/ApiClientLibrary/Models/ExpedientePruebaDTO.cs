@@ -16,4 +16,15 @@ namespace ApiClientLibrary.Models
         public List<string> muestras { get; set; }
 
     }
+
+    public class ExpedientePruebaConsultaDTO
+    {
+        public string id { get; set; }
+        public string claveExpediente { get; set; }
+        public OrdenFabricacionDTO ordenFabricacion { get; set; }
+        public int cantidadMuestras { get; set; }
+        public int maximoRechazos { get; set; }
+        public List<string> muestras { get; set; }
+
+    }
 }

@@ -4,10 +4,17 @@ using System;
 using System.Net.NetworkInformation;
 using System.Security.Cryptography;
 using Newtonsoft.Json;
+using System.Diagnostics.Metrics;
+using static System.Net.Mime.MediaTypeNames;
+using Newtonsoft.Json.Serialization;
+using System.Reflection.Emit;
+using System.Collections.Generic;
+
 
 F1_ConfiguracionInicial apiClient = new F1_ConfiguracionInicial();
 F2_PreparacionFabricacion apiClientPreparacion = new F2_PreparacionFabricacion();
 F3_Pruebas apiClientPruebas = new F3_Pruebas();
+F4_Liberacion apiClientLiberacion = new F4_Liberacion();
 string respuesta = "";
 
 Console.WriteLine("¿Qué operación POST deseas realizar?");
@@ -33,9 +40,27 @@ Console.WriteLine("19. Consulta Productos");//1
 Console.WriteLine("20. Consulta Contratos");//2
 Console.WriteLine("21. Consulta Orden de fabricación");//2
 Console.WriteLine("22. Consulta expediente de pruebas");//2
-Console.Write("Selecciona una opción (1-22): ");
+Console.WriteLine("--Este ultimo es el examne completo--");//2
+Console.WriteLine("25. Registra Examen completo");//2
+Console.Write("Selecciona una opción (1-25): ");
 
 string opcion = Console.ReadLine();
+
+var IdsInstrumentos = new List<string>();
+var IdNorma = new List<string>();
+var IdPrototipo = new List<string>();
+var IdsPruebas = new List<string>();
+var IdProducto = new List<string>();
+var IdsValoresReferencia = new List<string>();
+var IdContratoCFE = new List<string>();
+var IdContratoParticualar = new List<string>();
+var IdOrdenesFab = new List<string>();
+var IdExpediente = new List<string>();
+
+var claExpediente = "EXP-2025-01984";
+
+string consecutivo = "6";
+
 
 switch (opcion)
 {
@@ -49,20 +74,62 @@ switch (opcion)
         break;
 
     case "2":
-        var instrumentoResponse = await apiClient.RegistrarInstrumento(new InstrumentoDTO
-        {
-            id = "",
-            nombre = "micro-ohmetro digital ",
-            numeroSerie = "TUG098722",
-            fechaCalibracion = DateTime.Parse("2025-09-11T17:32:28.749Z"),
-            fechaVencimientoCalibracion = DateTime.Parse("2025-09-09T17:32:28.749Z"),
-            urlArchivo = "http://10.44.6.50/sid_capacitacion/swagger/index.html",
-            mD5 = "",
-            estatus = "VIGENTE", 
 
-        });
-        Console.WriteLine($"Respuesta Instrumento: {instrumentoResponse}");
-        respuesta += instrumentoResponse;
+
+        // Lista de instrumentos a registrar
+        var instrumentosList = new List<InstrumentoDTO>
+{
+    new InstrumentoDTO
+    {
+        id = "",
+        nombre = "micro-ohmetro digital-1",
+        numeroSerie = "TUG0987220",
+        fechaCalibracion = DateTime.Parse("2025-09-11T17:32:28.749Z"),
+        fechaVencimientoCalibracion = DateTime.Parse("2025-09-09T17:32:28.749Z"),
+        urlArchivo = "https://www.uv.es/fragar/html/pdf/html11.pdf",
+        mD5 = "",
+        estatus = "VIGENTE"
+    },
+    new InstrumentoDTO
+    {
+        id = "",
+        nombre = "multímetro digital",
+        numeroSerie = "ABC123456",
+        fechaCalibracion = DateTime.Parse("2025-08-01T10:00:00Z"),
+        fechaVencimientoCalibracion = DateTime.Parse("2026-08-01T10:00:00Z"),
+        urlArchivo = "https://www.uv.es/fragar/html/pdf/html11.pdf",
+        mD5 = "",
+        estatus = "VIGENTE"
+    }
+    // Puedes agregar más instrumentos aquí
+};
+
+        string respuestaIns = "";
+
+        foreach (var instrumento in instrumentosList)
+        {
+            var instrumentoResponse = await apiClient.RegistrarInstrumento(instrumento);
+            Console.WriteLine($"Respuesta Instrumento: {instrumentoResponse}");
+            respuestaIns += instrumentoResponse;
+        }
+
+
+
+
+        //var instrumentoResponse = await apiClient.RegistrarInstrumento(new InstrumentoDTO
+        //{
+        //    id = "",
+        //    nombre = "micro-ohmetro digital ",
+        //    numeroSerie = "TUG098722",
+        //    fechaCalibracion = DateTime.Parse("2025-09-11T17:32:28.749Z"),
+        //    fechaVencimientoCalibracion = DateTime.Parse("2025-09-09T17:32:28.749Z"),
+        //    urlArchivo = "https://www.uv.es/fragar/html/pdf/html11.pdf",
+        //    mD5 = "",
+        //    estatus = "VIGENTE", 
+
+        //});
+        //Console.WriteLine($"Respuesta Instrumento: {instrumentoResponse}");
+        //respuesta += instrumentoResponse;
         break;
 
 
@@ -73,7 +140,7 @@ switch (opcion)
             numero = "K311D-24-E/4951",
             fechaEmision = DateTime.Parse("2025-09-09T17:32:28.749Z"),
             fechaVencimiento = DateTime.Parse("2025-10-09T17:32:28.749Z"),
-            urlArchivo = "http://10.44.6.50/sid_capacitacion/swagger/index.html",
+            urlArchivo = "https://www.uv.es/fragar/html/pdf/html11.pdf",
             mD5 = "",
             estatus = "VIGENTE",
         });
@@ -167,6 +234,7 @@ switch (opcion)
             {
                 partidaContrato = "838",
                 descripcionAviso = "CABLE DE COBRE SEMIDURO DESNUDO CCN 1/0 AWG 7H",
+                areaDestinoCFE = "CFE",
                 cantidad = 1,
                 unidad = "m",
                 importeTotal = 282055
@@ -180,7 +248,7 @@ switch (opcion)
                 importeTotal = 302055
             }
         },
-            urlArchivo = "http://10.44.6.50/sid_capacitacion/swagger/index.html",
+            urlArchivo = "https://www.uv.es/fragar/html/pdf/html11.pdf",
             mD5 = "",
             fechaEntregaCFE = DateTime.Parse("2025-09-11T17:32:28.749Z"),
         });
@@ -240,17 +308,17 @@ switch (opcion)
         respuesta += expedientePruebasResponse;
         break;
 
-    case "11":
+   /* case "11":
         var resultadoPruebasResponse = await apiClientPruebas.RegistrarResultadoPruebas(new ResultadoPruebasDTO
         {
-            expediente = "68c198379d5906a9d9911d6a",
-            muestra = "MI-EXP-CIDEC-2025",
+            //expediente = "68c198379d5906a9d9911d6a",
+            //muestra = "MI-EXP-CIDEC-2025",
             idPrueba = "68c06badc55c585f0beafe95",
             idValorReferencia = "68c07104c55c585f0beafeda",
             fechaPrueba = DateTime.Parse("2025-09-09T17:32:28.749Z"),
             operadorPrueba = "COLVERAC",
             idInstrumentoMedicion = "68c06579c55c585f0beafe44",
-            valorMedido = 0,
+            valorMedido = "0",
             resultado = "SATISFACTORIO",
             numeroIntento =1,
 
@@ -259,18 +327,17 @@ switch (opcion)
         });
         Console.WriteLine($"Respuesta del expediente prueba: {resultadoPruebasResponse}");
         respuesta += resultadoPruebasResponse;
-        break;
+        break;*/
 
-    case "12":
-        var resultadoTerminaPruebaExpedienteResponse = await apiClientPruebas.TerminaPruebaExpediente(new TerminaPruebaExpedienteDTO
+   /* case "12":
+        var resultadoTerminaPruebaExpedienteResponse = await apiClientPruebas.TerminaPruebaExpediente("")
         {
             Expediente = "MI-EXP-CIDEC-2025",
 
         });
         Console.WriteLine($"Respuesta del expediente prueba: {resultadoTerminaPruebaExpedienteResponse}");
         respuesta += resultadoTerminaPruebaExpedienteResponse;
-        break;
-
+        break;*/
     case "13":
         var instrumentoActResponse = await apiClient.ActualizarInstrumento(new InstrumentoDTO
         {
@@ -279,7 +346,7 @@ switch (opcion)
             numeroSerie = "V-022",
             fechaCalibracion = DateTime.Parse("2025-09-09T17:32:28.749Z"),
             fechaVencimientoCalibracion = DateTime.Parse("2025-09-09T17:32:28.749Z"),
-            urlArchivo = "https://www.cenam.mx/publicaciones/descargas/PDFFiles/usodecertificados.pdf",
+            urlArchivo = "https://www.uv.es/fragar/html/pdf/html11.pdf",
             mD5 = "",
             estatus = "VIGENTE",
 
@@ -343,12 +410,16 @@ switch (opcion)
             }
 
             respuesta += $"Se consultaron {instrumentos.Count} normas.";
+
+
         }
         else
         {
             Console.WriteLine("Error al consultar instrumentos.");
             respuesta += "Error al consultar instrumentos.";
         }
+
+ 
 
         break;
 
@@ -385,7 +456,7 @@ switch (opcion)
         break;
 
     case "17":
-        var responsePrototipo = await apiClient.ConsultarPrototiop();
+        var responsePrototipo = await apiClient.ConsultarPrototipo();
 
         if (responsePrototipo.IsSuccessStatusCode)
         {
@@ -454,7 +525,7 @@ switch (opcion)
         if (responseProducto.IsSuccessStatusCode)
         {
             var jsonProducto = await responseProducto.Content.ReadAsStringAsync();
-            var Productos = JsonConvert.DeserializeObject<List<ProductosDTO>>(jsonProducto);
+            var Productos = JsonConvert.DeserializeObject<List<ProductosConsultaDTO>>(jsonProducto);
 
             Console.WriteLine("Productos encontradas:");
             foreach (var producto in Productos)
@@ -469,7 +540,7 @@ switch (opcion)
                 Console.WriteLine($"prototipo: {producto.prototipo}");
                 Console.WriteLine($"estatus: {producto.estatus}");
                 Console.WriteLine($"Fecha Registro: {producto.fechaRegistro}");
-                Console.WriteLine($"Pruebas: {producto.Pruebas}");
+                //Console.WriteLine($"Pruebas: {producto.Pruebas}");
                 Console.WriteLine(new string('-', 40));
             }
 
@@ -614,11 +685,1051 @@ switch (opcion)
 
         break;
 
-    
+    case "25":
+
+
+         //Llamamos a la lógica de otros cases
+        AgregaInstrumentos();
+        AgregaNorma();
+        AgregaPrototipo();
+        AgregaPruebas();
+        AgregaProducto();
+        AgregaValoresDeReferencia();
+        AgregaContratoCFE();
+        AgregaContratoParticualar();
+        AgregaOrdenDeFabricacion();
+        AgregaExpedientes();    
+        AgregaResultadoPrueba();
+        ValidaExpediente();
+        TerminaExpediente();
+        PrevioAvisosPrueba();
+        CreaElAvisoDePruebas();
+        break;
+        
 
     default:
         Console.WriteLine("Opción no válida. Intenta de nuevo.");
         break;
 }
+
+
+
+
+//Agrega Instrumento
+void AgregaInstrumentos()
+{
+    Console.WriteLine("Ejecutando lógica del case 2");
+    var instrumentos = new List<InstrumentoDTO>
+    {
+        new InstrumentoDTO
+        {
+            id = "",
+            nombre = "Micrómetro digital alta precisión",
+            numeroSerie = "MD-992381",
+            fechaCalibracion = DateTime.Parse("2026-02-11T17:32:28.749Z"),
+            fechaVencimientoCalibracion = DateTime.Parse("2026-10-09T17:32:28.749Z"),
+            urlArchivo = "https://www.uv.es/fragar/html/pdf/html11.pdf",
+            mD5 = "",
+            estatus = "VIGENTE"
+        },
+        new InstrumentoDTO
+        {
+            id = "",
+            nombre = "Cámara termográfica industrial",
+            numeroSerie = "CT-556781",
+            fechaCalibracion = DateTime.Parse("2026-02-01T10:00:00Z"),
+            fechaVencimientoCalibracion = DateTime.Parse("2026-10-01T10:00:00Z"),
+            urlArchivo = "https://www.uv.es/fragar/html/pdf/html11.pdf",
+            mD5 = "",
+            estatus = "VIGENTE"
+        },
+        new InstrumentoDTO
+        {
+            id = "",
+            nombre = "Resistencia eléctrica (Puente Kelvin)",
+            numeroSerie = "ABC123457",
+            fechaCalibracion = DateTime.Parse("2026-02-01T10:00:00Z"),
+            fechaVencimientoCalibracion = DateTime.Parse("2026-10-01T10:00:00Z"),
+            urlArchivo = "https://www.uv.es/fragar/html/pdf/html11.pdf",
+            mD5 = "",
+            estatus = "VIGENTE"
+        }
+
+        // Puedes agregar más instrumentos aquí
+    };
+
+        string respuestaIns = "";
+        int cont = 0;
+
+        foreach (var instrumento in instrumentos)
+        {
+            var instrumentoResponse = apiClient.RegistrarInstrumento(instrumento).Result;
+            Console.WriteLine($"Respuesta Instrumento: {instrumentoResponse}");
+            respuestaIns += instrumentoResponse;
+        cont++;
+        }
+
+
+    var responseInstrumentos = apiClient.ConsultarInstrumento().Result;
+    var jsonInstrumento = responseInstrumentos.Content.ReadAsStringAsync().Result; // ✅ Aquí usamos Content
+    var LosIdinstrumentos = JsonConvert.DeserializeObject<List<InstrumentoDTO>>(jsonInstrumento);
+
+
+    IdsInstrumentos = LosIdinstrumentos.TakeLast(cont).Select(i => i.id).ToList();
+    //IdsInstrumentos = instrumentos.TakeLast(cont).Select(i => i.id).ToList();
+
+
+    Console.WriteLine("Últimos IDsIntrumentos:");
+    foreach (var id in IdsInstrumentos)
+    {
+        Console.WriteLine($"IdIntrumentos: {id}");
+    }
+
+
+}
+
+void AgregaNorma()
+{
+
+    var normas = new List<NormaDTO>
+    {
+        new NormaDTO
+        {
+            id = "",
+            clave = "CFE E1234-78",
+            nombre = "CFE E1234-78",
+            edicion = "2024",
+            estatus = "VIGENTE",
+            esCFE = true,
+        }
+
+     };
+
+    string respuestaIns = "";
+    int cont = 0;
+
+    foreach (var norma in normas)
+    {
+        var normaResponse = apiClient.RegistrarNorma(norma);
+        Console.WriteLine($"Respuesta norma: {normaResponse}");
+        respuestaIns += normaResponse;
+        cont++;
+    }
+
+    var responseNorma = apiClient.ConsultarNormas().Result;
+    var jsonNorma = responseNorma.Content.ReadAsStringAsync().Result; // ✅ Aquí usamos Content
+    var LasNormas = JsonConvert.DeserializeObject<List<NormaDTO>>(jsonNorma);
+
+    IdNorma = LasNormas.TakeLast(cont).Select(i => i.id).ToList();
+
+    //IdNorma = normas.TakeLast(cont).Select(i => i.id).ToList();
+
+    Console.WriteLine("Últimos IDs Normas:");
+    foreach (var id in IdNorma)
+    {
+        Console.WriteLine($"IdNormas: {id}");
+    }
+}
+void AgregaPrototipo()
+{
+
+    var prototipos = new List<PrototiposDTO>
+    {
+        new PrototiposDTO
+        {
+            id = "",
+            numero = "ZX-88L-MOD/2024" + consecutivo,
+            fechaEmision = DateTime.Parse("2026-02-09T17:32:28.749Z"),
+            fechaVencimiento = DateTime.Parse("2026-10-09T17:32:28.749Z"),
+            urlArchivo = "https://www.uv.es/fragar/html/pdf/html11.pdf",
+            mD5 = "",
+            estatus = "VIGENTE",
+        }
+
+     };
+
+    string respuestaProt = "";
+    int cont = 0;
+
+    foreach (var prototipo in prototipos)
+    {
+        var prototipoResponse = apiClient.RegistrarPrototipos(prototipo).Result;
+        Console.WriteLine($"Respuesta prototipo: {prototipoResponse}");
+        respuestaProt += prototipoResponse;
+        cont++;
+    }
+
+    var responsePrototipos = apiClient.ConsultarPrototipo().Result;
+    var jsonPrototipo = responsePrototipos.Content.ReadAsStringAsync().Result; // ✅ Aquí usamos Content
+    var LosPrototipos = JsonConvert.DeserializeObject<List<PrototiposDTO>>(jsonPrototipo);
+
+    IdPrototipo = LosPrototipos.TakeLast(cont).Select(i => i.id).ToList();
+    //IdPrototipo = prototipos.TakeLast(cont).Select(i => i.id).ToList();
+
+    Console.WriteLine("Últimos IDsPrototipos:");
+    foreach (var id in IdPrototipo)
+    {
+        Console.WriteLine($"IdPrototipo: {id}");
+    }
+
+}
+
+void AgregaPruebas()
+{
+    
+    var pruebas = new List<PruebaDTO>
+    {
+        new PruebaDTO
+        {
+            id = "",
+            nombre = "Resistencia eléctrica del conductor (ohm/km)", // "inspeccion Visual",
+            estatus = "ACTIVA",
+            tipoPrueba = "ACEPTACION",
+            tipoResultado = "VALOR_REFERENCIA",
+        },
+        new PruebaDTO
+        {
+            id = "",
+            nombre = "Espesor de aislamiento (mm)", // "Valor nominal de masa",
+            estatus = "ACTIVA",
+            tipoPrueba = "ACEPTACION",
+            tipoResultado = "VALOR_REFERENCIA",
+        },
+
+        new PruebaDTO
+        {
+            id = "",
+            nombre = "Temperatura máxima en carga (°C)", // "Resistividad volumetrica a 20°C",
+            estatus = "ACTIVA",
+            tipoPrueba = "ACEPTACION",
+            tipoResultado = "VALOR_REFERENCIA",
+        }
+    };
+
+    string respuestaIns = "";
+    int cont = 0;
+    foreach (var prueba in pruebas)
+    {
+        var pruebaResponse = apiClient.RegistrarPruebas(prueba).Result;
+        Console.WriteLine($"Respuesta Prueba: {pruebaResponse}");
+        respuestaIns += pruebaResponse;
+        cont++;
+    }
+
+    var responsePruebas = apiClient.ConsultarPruebas().Result;
+    var jsonPruebas = responsePruebas.Content.ReadAsStringAsync().Result; // ✅ Aquí usamos Content
+    var LasPruebas = JsonConvert.DeserializeObject<List<PruebaDTO>>(jsonPruebas);
+
+    IdsPruebas = LasPruebas.TakeLast(cont).Select(i => i.id).ToList();
+    //IdsPruebas = pruebas.TakeLast(cont).Select(i => i.id).ToList();
+
+    Console.WriteLine("Últimos IDsPruebas:");
+    foreach (var id in IdsPruebas)
+    {
+        Console.WriteLine($"IdPruebas: {id}");
+    }
+
+}
+
+void AgregaProducto()
+{
+
+    // Lista de productos
+    /*IdNorma.Add("6928d1a70c4622cb379589a8");
+    IdPrototipo.Add("6928d2c30c4622cb379589a9");
+    IdsPruebas.Add("6928d2fc0c4622cb379589aa");
+    IdsPruebas.Add("6928d2ff0c4622cb379589ab");
+    IdsPruebas.Add("6928d3010c4622cb379589ac");*/
+
+
+    var productos = new List<ProductosDTO>
+
+    {
+        new ProductosDTO
+        {
+            id = "",
+            codigoFabricante = "J007" + consecutivo,
+            descripcion = "CABLE DE COBRE TIPO THHN 1/0 AWG",
+            descripcionCorta = "CABLE THW AWG 12",
+            tipoFabricacion = "LOTE",
+            unidad = "kg",  // segun como este en las partidas///////////////////
+            norma = IdNorma[0], // "68c317cddc75889685df3aba",
+            prototipo = IdPrototipo[0],// "68c3182ddc75889685df3abd",
+            estatus = "ACTIVO",
+            Pruebas = new List<string>() // Inicializamos vacío
+        }
+    };
+
+
+    // Ahora llenamos la propiedad Pruebas con foreach
+    foreach (var pruebaId in IdsPruebas)
+    {
+        productos[0].Pruebas.Add(pruebaId);
+    }
+
+    // Mostrar el resultado
+    foreach (var producto in productos)
+    {
+        Console.WriteLine($"Producto: {producto.codigoFabricante}");
+        Console.WriteLine("Pruebas:");
+        foreach (var prueba in producto.Pruebas)
+        {
+            Console.WriteLine($" - {prueba}");
+        }
+
+    }
+
+
+    string respuestaProdc = "";
+    int cont = 0;
+
+    foreach (var producto in productos)
+    {
+        var productoResponse = apiClient.RegistrarProductos(producto).Result;
+        Console.WriteLine($"Respuesta produto: {productoResponse}");
+        respuestaProdc += productoResponse;
+        cont++;
+    }
+
+
+    var responseProductos = apiClient.ConsultarProducto().Result;
+    var jsonProducto = responseProductos.Content.ReadAsStringAsync().Result; // ✅ Aquí usamos Content
+    var LosProductos = JsonConvert.DeserializeObject<List<ProductosConsultaDTO>>(jsonProducto);
+
+    IdProducto = LosProductos.TakeLast(cont).Select(i => i.id).ToList();
+    //IdProducto = productos.TakeLast(cont).Select(i => i.id).ToList();
+
+    Console.WriteLine("Últimos IDsProductos:");
+    foreach (var id in IdProducto)
+    {
+        Console.WriteLine($"IdsProductos: {id}");
+    } 
+
+}
+
+void AgregaValoresDeReferencia()
+{
+    /*IdsInstrumentos.Add("6928d13e0c4622cb379589a6");
+    IdsInstrumentos.Add("6928d1650c4622cb379589a7");
+    IdNorma.Add("6928d1a70c4622cb379589a8");
+    IdPrototipo.Add("6928d2c30c4622cb379589a9");
+    IdsPruebas.Add("6928d2fc0c4622cb379589aa");
+    IdsPruebas.Add("6928d2ff0c4622cb379589ab");
+    IdsPruebas.Add("6928d3010c4622cb379589ac");
+    IdProducto.Add("6928e9d50c4622cb37958a09");*/
+
+    var valoresReferencia = new List<ValorRefDTO>();       
+
+    valoresReferencia.Add(new ValorRefDTO
+    {
+        id = "",
+        idProducto = IdProducto[0], // Primer producto            
+        idPrueba = IdsPruebas[0],   // Aquí asignamos el idPrueba del ciclo            
+        valor = 0,
+        valor2 = (decimal)0.30,
+        unidad = "ohm/km",
+        comparacion = "RANGO"
+
+    });
+
+
+    valoresReferencia.Add(new ValorRefDTO
+    {
+        id = "",
+        idProducto = IdProducto[0], // Primer producto            
+        idPrueba = IdsPruebas[1],   // Aquí asignamos el idPrueba del ciclo            
+        valor = (decimal)1.12,
+        valor2 = (decimal)1.40,
+        unidad = "mm",
+        comparacion = "RANGO"
+
+    });
+
+    valoresReferencia.Add(new ValorRefDTO
+    {
+        id = "",
+        idProducto = IdProducto[0], // Primer producto            
+        idPrueba = IdsPruebas[2],   // Aquí asignamos el idPrueba del ciclo            
+        valor = 0,
+        valor2 = 90,
+        unidad = "°C",
+        comparacion = "RANGO"
+
+    });
+
+    // Ahora llamamos al API para cada valorReferencia    
+    string respuestaValorRef = "";  
+    int cont = 0;
+    foreach (var valorRef in valoresReferencia)    
+    {    
+        var valorRefResponse = apiClient.RegistrarValorReferencia(valorRef).Result;        
+        Console.WriteLine($"Respuesta Prueba: {valorRefResponse}");
+
+        respuestaValorRef += valorRefResponse;
+        cont++;
+
+        // Guardamos el ID que nos regrese la API (suponiendo que actualiza valorRef.id)        
+        IdsValoresReferencia.Add(valorRef.id);        
+        respuestaValorRef += valorRefResponse;        
+    }
+    // Mostrar los IDs generados
+    // 
+    var responseValoresRef = apiClient.ConsultarValorReferencia().Result;
+    var jsonValoreRef = responseValoresRef.Content.ReadAsStringAsync().Result; // ✅ Aquí usamos Content
+    var LosValoresRef = JsonConvert.DeserializeObject<List<ValorRefDTO>>(jsonValoreRef);
+
+    IdsValoresReferencia = LosValoresRef.TakeLast(cont).Select(i => i.id).ToList();    
+    
+    foreach (var id in IdsValoresReferencia)    
+    {
+        Console.WriteLine($"IdValoresRef: {id}");
+    }
+
+    
+}
+
+void AgregaContratoCFE()
+{
+    /*IdsInstrumentos.Add("6928d13e0c4622cb379589a6");
+    IdsInstrumentos.Add("6928d1650c4622cb379589a7");
+    IdNorma.Add("6928d1a70c4622cb379589a8");
+    IdPrototipo.Add("6928d2c30c4622cb379589a9");
+    IdsPruebas.Add("6928d2fc0c4622cb379589aa");
+    IdsPruebas.Add("6928d2ff0c4622cb379589ab");
+    IdsPruebas.Add("6928d3010c4622cb379589ac");
+    IdProducto.Add("6928e9d50c4622cb37958a09");
+    IdsValoresReferencia.Add("6928e9e70c4622cb37958a0a");
+    IdsValoresReferencia.Add("6928e9e70c4622cb37958a0b");
+    IdsValoresReferencia.Add("6928e9e70c4622cb37958a0c");*/
+
+    var contratosCFE = new List<ContratosDTO>
+    {
+        new ContratosDTO
+        {
+            Tipo = "ContratoCFE",
+            id = "",
+            tipoContrato = "ContratoCFE",
+            noContrato = "88001295" + consecutivo,
+            estatus = "ACTIVO",
+            detalleContrato = new List<DetalleContratoDTO>
+
+            {
+                new DetalleContratoDTO
+                {
+                    partidaContrato = "115",
+                    descripcionAviso = "CABLE THHN-CU 1/0 AWG",
+                    areaDestinoCFE = "CFE",
+                    cantidad = 620,
+                    unidad = "kg",
+                    importeTotal = 210800
+                },
+                new DetalleContratoDTO
+                {
+                    partidaContrato = "231",
+                    descripcionAviso = "CABLE THHN-CU 1/0 AWG",
+                    areaDestinoCFE = "CFE",
+                    cantidad = 850,
+                    unidad = "kg",
+                    importeTotal = 289500
+                }
+            },
+            urlArchivo = "https://www.uv.es/fragar/html/pdf/html11.pdf",
+            mD5 = "",
+            fechaEntregaCFE = DateTime.Parse("2026-09-11T17:32:28.749Z"),
+        }
+
+     };
+
+    string respuestaContrato = "";
+    int cont = 0;
+
+    foreach (var contrato in contratosCFE)
+    {
+        var contratoResponse = apiClientPreparacion.RegistrarContratos(contrato).Result;
+
+        var jsonContrato = contratoResponse.Content.ReadAsStringAsync().Result;
+        // Deserializamos al tipo correcto (por ejemplo, OrdenFabricacionDTO)
+        //var responseContratosCFE = JsonConvert.DeserializeObject<ContratosDTO>(jsonContrato);
+        IdContratoCFE.Add(jsonContrato);
+
+        Console.WriteLine($"Respuesta contrato: {contratoResponse}");
+        respuestaContrato += contratoResponse;
+        cont++;
+    }
+
+    //var responseContratosCFE = apiClientPreparacion.ConsultarContratos().Result;
+    //var jsonContratosCFE = responseContratosCFE.Content.ReadAsStringAsync().Result; // ✅ Aquí usamos Content
+    //var LosContratos = JsonConvert.DeserializeObject<List<ContratosDTO>>(jsonContratosCFE);
+
+    //IdContratoCFE = LosContratos.TakeLast(cont).Select(i => i.id).ToList();
+    //IdContratoCFE = contratosCFE.TakeLast(cont).Select(i => i.id).ToList();
+
+    Console.WriteLine("Últimos IDs Contratos:");
+    foreach (var id in IdContratoCFE)
+    {
+        Console.WriteLine($"IdContratoCFE: {id}");
+    }
+
+}
+
+
+void AgregaContratoParticualar()
+{
+    /*IdsInstrumentos.Add("6928d13e0c4622cb379589a6");
+    IdsInstrumentos.Add("6928d1650c4622cb379589a7");
+    IdNorma.Add("6928d1a70c4622cb379589a8");
+    IdPrototipo.Add("6928d2c30c4622cb379589a9");
+    IdsPruebas.Add("6928d2fc0c4622cb379589aa");
+    IdsPruebas.Add("6928d2ff0c4622cb379589ab");
+    IdsPruebas.Add("6928d3010c4622cb379589ac");
+    IdProducto.Add("6928e9d50c4622cb37958a09");
+    IdsValoresReferencia.Add("6928e9e70c4622cb37958a0a");
+    IdsValoresReferencia.Add("6928e9e70c4622cb37958a0b");
+    IdsValoresReferencia.Add("6928e9e70c4622cb37958a0c");
+    IdContratoCFE.Add("6928f36f0c4622cb37958a55");*/
+
+    var contratosParticualar = new List<ContratosDTO>
+    {
+        new ContratosDTO
+        {
+            Tipo = "ContratoParticular",
+            id = "",
+            tipoContrato = "ContratoParticular",
+            noContrato = "9100026917" + consecutivo,
+            estatus = "ACTIVO",
+            detalleContrato = new List<DetalleContratoDTO>
+
+            {
+                new DetalleContratoDTO
+                {
+                    partidaContrato = "1",
+                    descripcionAviso = "CABLE THHN-CU 1/0 AWG",
+                    cantidad = 1320,
+                    unidad = "kg",
+                    importeTotal = 282055
+                }
+            }
+        }
+
+     };
+
+    string respuestaContrato = "";
+    int cont = 0;
+
+    foreach (var contrato in contratosParticualar)
+    {
+        var contratoResponse = apiClientPreparacion.RegistrarContratos(contrato).Result;
+
+        var jsonContrato = contratoResponse.Content.ReadAsStringAsync().Result;
+        IdContratoParticualar.Add(jsonContrato);
+        Console.WriteLine($"Respuesta contrato: {contratoResponse}");
+        respuestaContrato += contratoResponse;
+        cont++;
+    }
+
+    //var responseContratosPart = apiClientPreparacion.ConsultarContratos().Result;
+    //var jsonContratosPart = responseContratosPart.Content.ReadAsStringAsync().Result; // ✅ Aquí usamos Content
+    //var LosContratos = JsonConvert.DeserializeObject<List<ContratosDTO>>(jsonContratosPart);
+
+    //IdContratoParticualar = LosContratos.TakeLast(cont).Select(i => i.id).ToList();
+    //IdContratoParticualar = contratosParticualar.TakeLast(cont).Select(i => i.id).ToList();
+
+    Console.WriteLine("Últimos IDs ContratosParticular:");
+    foreach (var id in IdContratoParticualar)
+    {
+        Console.WriteLine($"IdContratoParticular: {id}");
+    }
+
+}
+
+void AgregaOrdenDeFabricacion()
+{
+
+
+
+    var OrdenesFabricacion = new List<OrdenFabricacionDTO>
+    {
+        new OrdenFabricacionDTO
+        {
+            id = "",
+            claveOrdenFabricacion = "OF-2025-CFE-7781" + consecutivo,
+            loteFabricacion = "CU00988123" + consecutivo,
+            idProducto = IdProducto[0], //  "68c06ed2c55c585f0beafeb5",
+            detalleFabricacion = new List<DetalleFabricacionDTO>
+
+            {
+                new DetalleFabricacionDTO
+                {
+                    contratoId = IdContratoCFE[0],// "68c08693c55c585f0beaff05",
+                    tipoContrato = "ContratoCFE",
+                    partidaContratoId = "115",
+                    descripcionPartida = "CABLE THHN-CU 1/0 AWG",
+                    unidad = "kg",
+                    cantidadOriginalContrato = 620,
+                    cantidadAFabricar = 620
+                },
+                new DetalleFabricacionDTO
+                {
+                    contratoId = IdContratoCFE[0],// "68c08693c55c585f0beaff05",
+                    tipoContrato = "ContratoCFE",
+                    partidaContratoId = "231",
+                    descripcionPartida = "CABLE THHN-CU 1/0 AWG",
+                    unidad = "kg",
+                    cantidadOriginalContrato = 850,
+                    cantidadAFabricar = 850
+                },
+                new DetalleFabricacionDTO
+                {
+                    contratoId = IdContratoParticualar[0], // "68c08836c55c585f0beaff1a",
+                    tipoContrato = "ContratoParticular",
+                    partidaContratoId = "1",
+                    descripcionPartida = "CABLE THHN-CU 1/0 AWG",
+                    unidad = "kg",
+                    cantidadOriginalContrato = 1320,
+                    cantidadAFabricar = 1320
+                }
+
+            }
+        }
+
+     };
+
+    //string respuestaOrdenFab = "";
+    int cont = 0;
+
+    foreach (var orden in OrdenesFabricacion)
+    {
+        var OrdenesResponse = apiClientPreparacion.RegistrarOrdenFabricacion(orden).Result;
+
+        var jsonOrden = OrdenesResponse.Content.ReadAsStringAsync().Result;
+        // Deserializamos al tipo correcto (por ejemplo, OrdenFabricacionDTO)
+        //var respuestaOrdenFab = JsonConvert.DeserializeObject<OrdenFabricacionConsultaDTO>(jsonOrden);
+
+
+        // Deserializamos como lista
+        var ordenes = JsonConvert.DeserializeObject<List<OrdenFabricacionDTO>>(jsonOrden);
+
+        // Obtener el primer ID (o todos)
+        var idOrden = ordenes[0].id;
+
+        //Console.WriteLine($"ID de la orden: {idOrden}");
+
+        // Si quieres todos los IDs:
+        IdOrdenesFab.Add(idOrden); // ✅ Correcto
+        //IdOrdenesFab = idOrden;// ordenes.Select(o => o.id).ToList();
+
+
+        //IdOrdenesFab.Add(jsonOrden);
+        Console.WriteLine($"Respuesta ordenes de fabricacion: {OrdenesResponse}");
+        //respuestaOrdenFab += OrdenesResponse;
+        cont++;
+    }
+
+    Console.WriteLine("Últimos IDs Ordenes fab:");
+    foreach (var id in IdOrdenesFab)
+    {
+        Console.WriteLine($"IdOrdenFab: {id}");
+    }
+
+}
+
+void AgregaExpedientes()
+{
+    /*IdsInstrumentos.Add("6928d13e0c4622cb379589a6");
+    IdsInstrumentos.Add("6928d1650c4622cb379589a7");
+    IdNorma.Add("6928d1a70c4622cb379589a8");
+    IdPrototipo.Add("6928d2c30c4622cb379589a9");
+    IdsPruebas.Add("6928d2fc0c4622cb379589aa");
+    IdsPruebas.Add("6928d2ff0c4622cb379589ab");
+    IdsPruebas.Add("6928d3010c4622cb379589ac");
+    IdProducto.Add("6928e9d50c4622cb37958a09");
+    IdsValoresReferencia.Add("6928e9e70c4622cb37958a0a");
+    IdsValoresReferencia.Add("6928e9e70c4622cb37958a0b");
+    IdsValoresReferencia.Add("6928e9e70c4622cb37958a0c");
+    IdContratoCFE.Add("6928f36f0c4622cb37958a55");
+    IdContratoParticualar.Add("6928f71e0c4622cb37958a58");
+    IdOrdenesFab.Add("6929b0189302f09173dfa48e");*/
+
+    var expedintes = new List<ExpedientePruebaDTO>
+    {
+        new ExpedientePruebaDTO
+        {
+        id = "",
+        claveExpediente = claExpediente + consecutivo,
+        ordenFabricacion = IdOrdenesFab[0], // "68c08fe3c55c585f0beaff37",
+        cantidadMuestras = 3,
+        maximoRechazos = 1,
+        muestras = new List<string> { "C-01987-01", "C-01987-02", "C-01987-03" }
+        }
+
+     };
+
+    //string respuestaExpediente = "";
+    int cont = 0;
+
+    foreach (var expediente in expedintes)
+    {
+        var expedienteResponse = apiClientPreparacion.RegistrarExpedientePruebas(expediente).Result;
+        var jsonExpediente = expedienteResponse.Content.ReadAsStringAsync().Result;
+
+        var expedienteList = JsonConvert.DeserializeObject<List<ExpedientePruebaConsultaDTO>>(jsonExpediente);
+
+        var idEpe = expedienteList[0].id;
+        IdExpediente.Add(idEpe);
+ 
+        //var respuestaExpediente = JsonConvert.DeserializeObject<ContratosResponseDTO>(jsonExpediente);
+
+        //IdExpediente.Add(respuestaExpediente.id);
+        Console.WriteLine($"Respuesta ordenes de fabricacion: {expedienteResponse}");
+    }
+
+    //IdExpediente = expedintes.TakeLast(cont).Select(i => i.id).ToList();
+
+    Console.WriteLine("Últimos IDs Expedientes:");
+    foreach (var id in IdExpediente)
+    {
+        Console.WriteLine($"IdExpediente: {id}");
+    }
+
+}
+
+void AgregaResultadoPrueba()
+{
+    /*IdsInstrumentos.Add("6928d13e0c4622cb379589a6");
+    IdsInstrumentos.Add("6928d1650c4622cb379589a7");
+    IdNorma.Add("6928d1a70c4622cb379589a8");
+    IdPrototipo.Add("6928d2c30c4622cb379589a9");
+    IdsPruebas.Add("6928d2fc0c4622cb379589aa");
+    IdsPruebas.Add("6928d2ff0c4622cb379589ab");
+    IdsPruebas.Add("6928d3010c4622cb379589ac");
+    IdProducto.Add("6928e9d50c4622cb37958a09");
+    IdsValoresReferencia.Add("6928e9e70c4622cb37958a0a");
+    IdsValoresReferencia.Add("6928e9e70c4622cb37958a0b");
+    IdsValoresReferencia.Add("6928e9e70c4622cb37958a0c");
+    IdContratoCFE.Add("6928f36f0c4622cb37958a55");
+    IdContratoParticualar.Add("6928f71e0c4622cb37958a58");
+    IdOrdenesFab.Add("6929b0189302f09173dfa48e");
+    IdExpediente.Add("6929d2159302f09173dfa49d");*/
+    var muestra = new List<string>();
+    muestra.Add("C-01987-01");
+    muestra.Add("C-01987-02");
+    muestra.Add("C-01987-03");
+
+
+    var claveExpe = new List<string>();
+    claveExpe.Add(claExpediente);
+
+
+    //var ResultadosPruebas = new List<ResultadoPruebasDTO>
+    //{
+
+    //Muestra C-01987-01
+    //Resistividad electrica    
+    ResultadoPruebasDTO Restultado = new ResultadoPruebasDTO        
+    {     
+        //
+        idPrueba = IdsPruebas[0],// "68c06badc55c585f0beafe95",            
+        idValorReferencia = IdsValoresReferencia[0], // "68c07104c55c585f0beafeda",        
+        fechaPrueba = DateTime.Parse("2026-03-09T17:32:28.749Z"),  
+        operadorPrueba = "COLVERAC",        
+        idInstrumentoMedicion = IdsInstrumentos[2], // "68c06579c55c585f0beafe44",        
+        valorMedido = "0.28",        
+        resultado = "SATISFACTORIO",        
+        numeroIntento = 1,        
+    };
+    
+    var resultadoPrueResponse = apiClientPruebas.RegistrarResultadoPruebas(Restultado, claveExpe[0] + consecutivo, muestra[0]).Result;
+
+    Console.WriteLine($"Respuesta Respuesta: {resultadoPrueResponse}");
+
+    //Espesor aislamiento
+    ResultadoPruebasDTO Restultado2 = new ResultadoPruebasDTO
+    {
+        idPrueba = IdsPruebas[1],// "68c06badc55c585f0beafe95",
+        idValorReferencia = IdsValoresReferencia[1], // "68c07104c55c585f0beafeda",
+        fechaPrueba = DateTime.Parse("2026-03-09T17:32:28.749Z"),
+        operadorPrueba = "COLVERAC",
+        idInstrumentoMedicion = IdsInstrumentos[0], // "68c06579c55c585f0beafe44",
+        valorMedido = "1.20",
+        resultado = "SATISFACTORIO",
+        numeroIntento = 1,
+    };
+    var resultadoPrueResponse2 = apiClientPruebas.RegistrarResultadoPruebas(Restultado2, claveExpe[0] + consecutivo, muestra[0]).Result;
+    Console.WriteLine($"Respuesta Respuesta 2: {resultadoPrueResponse2}");
+
+    //Temperatura maxima
+    ResultadoPruebasDTO Restultado3 = new ResultadoPruebasDTO
+    {
+        idPrueba = IdsPruebas[2],// "68c06badc55c585f0beafe95",
+        idValorReferencia = IdsValoresReferencia[2], // "68c07104c55c585f0beafeda",
+        fechaPrueba = DateTime.Parse("2026-03-09T17:32:28.749Z"),
+        operadorPrueba = "COLVERAC",
+        idInstrumentoMedicion = IdsInstrumentos[1], // "68c06579c55c585f0beafe44",
+        valorMedido = "85",
+        resultado = "SATISFACTORIO",
+        numeroIntento = 1,
+    };
+
+    ////////////////
+
+    var resultadoPrueResponse3 = apiClientPruebas.RegistrarResultadoPruebas(Restultado3, claveExpe[0] + consecutivo, muestra[0]).Result;
+    Console.WriteLine($"Respuesta Respuesta 3: {resultadoPrueResponse3}");
+
+    //Muestra C-01987-02
+    //Resistividad electrica 
+    ResultadoPruebasDTO Restultado4 = new ResultadoPruebasDTO
+    {
+        idPrueba = IdsPruebas[0],// "68c06badc55c585f0beafe95",            
+        idValorReferencia = IdsValoresReferencia[0], // "68c07104c55c585f0beafeda",        
+        fechaPrueba = DateTime.Parse("2026-03-09T17:32:28.749Z"),
+        operadorPrueba = "COLVERAC",
+        idInstrumentoMedicion = IdsInstrumentos[2], // "68c06579c55c585f0beafe44",        
+        valorMedido = "0.35",
+        resultado = "NO SATISFACTORIO",
+        numeroIntento = 1,
+    };
+
+    var resultadoPrueResponse4 = apiClientPruebas.RegistrarResultadoPruebas(Restultado4, claveExpe[0] + consecutivo, muestra[1]).Result;
+    Console.WriteLine($"Respuesta Respuesta 4: {resultadoPrueResponse4}");
+
+    //Resistividad electrica 
+    ResultadoPruebasDTO Restultado5 = new ResultadoPruebasDTO
+    {
+        idPrueba = IdsPruebas[0],// "68c06badc55c585f0beafe95",            
+        idValorReferencia = IdsValoresReferencia[0], // "68c07104c55c585f0beafeda",        
+        fechaPrueba = DateTime.Parse("2026-03-09T17:32:28.749Z"),
+        operadorPrueba = "COLVERAC",
+        idInstrumentoMedicion = IdsInstrumentos[2], // "68c06579c55c585f0beafe44",        
+        valorMedido = "0.31",
+        resultado = "NO SATISFACTORIO",
+        numeroIntento = 2,
+    };
+
+    var resultadoPrueResponse5 = apiClientPruebas.RegistrarResultadoPruebas(Restultado5, claveExpe[0] + consecutivo, muestra[1]).Result;
+    Console.WriteLine($"Respuesta Respuesta 5: {resultadoPrueResponse5}");
+
+    //Resistividad electrica 
+    ResultadoPruebasDTO Restultado6 = new ResultadoPruebasDTO
+    {
+        idPrueba = IdsPruebas[0],// "68c06badc55c585f0beafe95",            
+        idValorReferencia = IdsValoresReferencia[0], // "68c07104c55c585f0beafeda",        
+        fechaPrueba = DateTime.Parse("2026-03-09T17:32:28.749Z"),
+        operadorPrueba = "COLVERAC",
+        idInstrumentoMedicion = IdsInstrumentos[2], // "68c06579c55c585f0beafe44",        
+        valorMedido = "0.29",
+        resultado = "SATISFACTORIO",
+        numeroIntento = 3,
+    };
+
+    var resultadoPrueResponse6 = apiClientPruebas.RegistrarResultadoPruebas(Restultado6, claveExpe[0] + consecutivo, muestra[1]).Result;
+    Console.WriteLine($"Respuesta Respuesta 6: {resultadoPrueResponse6}");
+
+    //Espesor aislamiento
+    ResultadoPruebasDTO Restultado7 = new ResultadoPruebasDTO
+    {
+        idPrueba = IdsPruebas[1],// "68c06badc55c585f0beafe95",
+        idValorReferencia = IdsValoresReferencia[1], // "68c07104c55c585f0beafeda",
+        fechaPrueba = DateTime.Parse("2026-03-09T17:32:28.749Z"),
+        operadorPrueba = "COLVERAC",
+        idInstrumentoMedicion = IdsInstrumentos[0], // "68c06579c55c585f0beafe44",
+        valorMedido = "1.42",
+        resultado = "NO SATISFACTORIO",
+        numeroIntento = 1,
+    };
+
+    var resultadoPrueResponse7 = apiClientPruebas.RegistrarResultadoPruebas(Restultado7, claveExpe[0] + consecutivo, muestra[1]).Result;
+    Console.WriteLine($"Respuesta Respuesta 7: {resultadoPrueResponse7}");
+
+    
+    //Espesor aislamiento
+    ResultadoPruebasDTO Restultado8 = new ResultadoPruebasDTO
+    {
+        idPrueba = IdsPruebas[1],// "68c06badc55c585f0beafe95",
+        idValorReferencia = IdsValoresReferencia[1], // "68c07104c55c585f0beafeda",
+        fechaPrueba = DateTime.Parse("2026-03-09T17:32:28.749Z"),
+        operadorPrueba = "COLVERAC",
+        idInstrumentoMedicion = IdsInstrumentos[0], // "68c06579c55c585f0beafe44",
+        valorMedido = "1.33",
+        resultado = "SATISFACTORIO",
+        numeroIntento = 2,
+    };
+
+    var resultadoPrueResponse8 = apiClientPruebas.RegistrarResultadoPruebas(Restultado8, claveExpe[0] + consecutivo, muestra[1]).Result;
+    Console.WriteLine($"Respuesta Respuesta 8: {resultadoPrueResponse8}");
+
+   
+    //Temperatura maxima
+    ResultadoPruebasDTO Restultado9 = new ResultadoPruebasDTO
+    {
+        idPrueba = IdsPruebas[2],// "68c06badc55c585f0beafe95",
+        idValorReferencia = IdsValoresReferencia[2], // "68c07104c55c585f0beafeda",
+        fechaPrueba = DateTime.Parse("2026-03-09T17:32:28.749Z"),
+        operadorPrueba = "COLVERAC",
+        idInstrumentoMedicion = IdsInstrumentos[1], // "68c06579c55c585f0beafe44",
+        valorMedido = "88",
+        resultado = "SATISFACTORIO",
+        numeroIntento = 1,
+    };
+
+    var resultadoPrueResponse9 = apiClientPruebas.RegistrarResultadoPruebas(Restultado9, claveExpe[0] + consecutivo, muestra[1]).Result;
+    Console.WriteLine($"Respuesta Respuesta 9: {resultadoPrueResponse9}");
+
+    //Muestra c-01987-03
+    //Resistencia eléctrica
+    ResultadoPruebasDTO Restultado10 = new ResultadoPruebasDTO
+    {
+        idPrueba = IdsPruebas[0],// "68c06badc55c585f0beafe95",            
+        idValorReferencia = IdsValoresReferencia[0], // "68c07104c55c585f0beafeda",        
+        fechaPrueba = DateTime.Parse("2026-03-09T17:32:28.749Z"),
+        operadorPrueba = "COLVERAC",
+        idInstrumentoMedicion = IdsInstrumentos[2], // "68c06579c55c585f0beafe44",        
+        valorMedido = "0.27",
+        resultado = "SATISFACTORIO",
+        numeroIntento = 1,
+    };
+
+    var resultadoPrueResponse10 = apiClientPruebas.RegistrarResultadoPruebas(Restultado10, claveExpe[0] + consecutivo, muestra[2]).Result;
+    Console.WriteLine($"Respuesta Respuesta 10: {resultadoPrueResponse10}");
+
+    //Espesor aislamiento
+    ResultadoPruebasDTO Restultado11 = new ResultadoPruebasDTO
+    {
+        idPrueba = IdsPruebas[1],// "68c06badc55c585f0beafe95",
+        idValorReferencia = IdsValoresReferencia[1], // "68c07104c55c585f0beafeda",
+        fechaPrueba = DateTime.Parse("2026-03-09T17:32:28.749Z"),
+        operadorPrueba = "COLVERAC",
+        idInstrumentoMedicion = IdsInstrumentos[0], // "68c06579c55c585f0beafe44",
+        valorMedido = "1.10",
+        resultado = "NO SATISFACTORIO",
+        numeroIntento = 1,
+    };
+
+    var resultadoPrueResponse11 = apiClientPruebas.RegistrarResultadoPruebas(Restultado11, claveExpe[0] + consecutivo, muestra[2]).Result;
+    Console.WriteLine($"Respuesta Respuesta 11: {resultadoPrueResponse11}");
+
+    //Espesor aislamiento
+    ResultadoPruebasDTO Restultado12 = new ResultadoPruebasDTO
+    {
+        idPrueba = IdsPruebas[1],// "68c06badc55c585f0beafe95",
+        idValorReferencia = IdsValoresReferencia[1], // "68c07104c55c585f0beafeda",
+        fechaPrueba = DateTime.Parse("2026-03-09T17:32:28.749Z"),
+        operadorPrueba = "COLVERAC",
+        idInstrumentoMedicion = IdsInstrumentos[0], // "68c06579c55c585f0beafe44",
+        valorMedido = "1.18",
+        resultado = "SATISFACTORIO",
+        numeroIntento = 2,
+    };
+
+    var resultadoPrueResponse12 = apiClientPruebas.RegistrarResultadoPruebas(Restultado12, claveExpe[0] + consecutivo, muestra[2]).Result;
+    Console.WriteLine($"Respuesta Respuesta 12: {resultadoPrueResponse12}");
+
+
+    //Temperatura maxima
+    ResultadoPruebasDTO Restultado13 = new ResultadoPruebasDTO
+    {
+        idPrueba = IdsPruebas[2],// "68c06badc55c585f0beafe95",
+        idValorReferencia = IdsValoresReferencia[2], // "68c07104c55c585f0beafeda",
+        fechaPrueba = DateTime.Parse("2026-03-09T17:32:28.749Z"),
+        operadorPrueba = "COLVERAC",
+        idInstrumentoMedicion = IdsInstrumentos[1], // "68c06579c55c585f0beafe44",
+        valorMedido = "92",
+        resultado = "NO SATISFACTORIO",
+        numeroIntento = 1,
+    };
+
+    var resultadoPrueResponse13 = apiClientPruebas.RegistrarResultadoPruebas(Restultado13, claveExpe[0] + consecutivo, muestra[2]).Result;
+    Console.WriteLine($"Respuesta Respuesta 13: {resultadoPrueResponse13}");
+
+    //Temperatura maxima
+    ResultadoPruebasDTO Restultado14 = new ResultadoPruebasDTO
+    {
+        idPrueba = IdsPruebas[2],// "68c06badc55c585f0beafe95",
+        idValorReferencia = IdsValoresReferencia[2], // "68c07104c55c585f0beafeda",
+        fechaPrueba = DateTime.Parse("2026-03-09T17:32:28.749Z"),
+        operadorPrueba = "COLVERAC",
+        idInstrumentoMedicion = IdsInstrumentos[1], // "68c06579c55c585f0beafe44",
+        valorMedido = "89",
+        resultado = "SATISFACTORIO",
+        numeroIntento = 2,
+    };
+
+    var resultadoPrueResponse14 = apiClientPruebas.RegistrarResultadoPruebas(Restultado14, claveExpe[0] + consecutivo, muestra[2]).Result;
+    Console.WriteLine($"Respuesta Respuesta 14: {resultadoPrueResponse14}");
+
+    // Puedes agregar más instrumentos aquí
+}
+
+void ValidaExpediente()
+{
+    var responseValidarExpediente = apiClientPruebas.ValidarExpedientePruebas(claExpediente + consecutivo).Result;
+    Console.WriteLine($"Valida expediente: {responseValidarExpediente}");
+}
+
+void TerminaExpediente()
+{
+    var responseTerminaExpediente = apiClientPruebas.TerminaPruebaExpediente(claExpediente + consecutivo).Result;
+    Console.WriteLine($"Valida expediente: {responseTerminaExpediente}");
+}
+
+void PrevioAvisosPrueba()
+{
+    var responseCreaAvisoDePruebas = apiClientLiberacion.PrevioAvisosPrueba(claExpediente + consecutivo).Result;
+    Console.WriteLine($"Crea previo aviso de pruebas: {responseCreaAvisoDePruebas}");
+
+
+    // Leer el body como string
+    var body = responseCreaAvisoDePruebas.Content.ReadAsStringAsync().Result;
+
+
+    // Dar formato JSON
+    var formattedJson = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(body), Formatting.Indented);
+
+    // Imprimir el JSON formateado
+    Console.WriteLine(formattedJson);
+
+
+}
+
+
+void CreaElAvisoDePruebas()
+{
+    var responseCreaAvisoDePruebas = apiClientLiberacion.CrearAvisoDePrueba(claExpediente + consecutivo).Result;
+    Console.WriteLine($"Crea el aviso de pruebas expediente: {responseCreaAvisoDePruebas}");
+
+}
+
+
+
+
+
+
+
+
+/*var resultadoPruebasResponse = apiClientPruebas.RegistrarResultadoPruebas(new ResultadoPruebasDTO
+{
+    expediente = IdExpediente[0], // "68c198379d5906a9d9911d6a",
+    muestra = "MI-EXP-CIDEC-2025",
+    idPrueba = "68c06badc55c585f0beafe95",
+    idValorReferencia = "68c07104c55c585f0beafeda",
+    fechaPrueba = DateTime.Parse("2025-09-09T17:32:28.749Z"),
+    operadorPrueba = "COLVERAC",
+    idInstrumentoMedicion = "68c06579c55c585f0beafe44",
+    valorMedido = 0,
+    resultado = "SATISFACTORIO",
+    numeroIntento = 1,
+
+
+
+});
+Console.WriteLine($"Respuesta del expediente prueba: {resultadoPruebasResponse}");
+respuesta += resultadoPruebasResponse;*/
+
+
+
+
+
+
+
+
 
 Console.WriteLine("Proceso finalizado.");

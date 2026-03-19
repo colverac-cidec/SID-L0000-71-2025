@@ -117,7 +117,7 @@ namespace ApiClientLibrary.Services
         }
 
 
-        public async Task<HttpResponseMessage> ConsultarPrototiop()
+        public async Task<HttpResponseMessage> ConsultarPrototipo()
         {
             var response = await _httpClient.GetAsync("Prototipo");
             return response;

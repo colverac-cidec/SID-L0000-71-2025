@@ -18,4 +18,17 @@ namespace ApiClientLibrary.Models
         public DateTime fechaRegistro { get; set; } = DateTime.Now;
 
     }
+
+    public class ValorRefConsultaDTO
+    {
+        public string id { get; set; }
+        public ProductosDTO idProducto { get; set; }
+        public PruebaDTO idPrueba { get; set; }
+        public decimal valor { get; set; }
+        public decimal valor2 { get; set; }
+        public string unidad { get; set; }
+        public string comparacion { get; set; }
+        public DateTime fechaRegistro { get; set; } = DateTime.Now;
+
+    }
 }

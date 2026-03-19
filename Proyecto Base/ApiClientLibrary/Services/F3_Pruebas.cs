@@ -33,25 +33,38 @@ namespace ApiClientLibrary.Services
             }
         }
 
-        public async Task<HttpResponseMessage> RegistrarResultadoPruebas(ResultadoPruebasDTO resultadoPruebas)
+        public async Task<HttpResponseMessage> RegistrarResultadoPruebas(ResultadoPruebasDTO resultadoPruebas, string ClaveExpedinete, string Muestra)
         {
             var json = JsonSerializer.Serialize(resultadoPruebas);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("AgregaResultadoPrueba", content);
+            string url = $"AgregaResultadoPrueba?expediente={Uri.EscapeDataString(ClaveExpedinete)}&muestra={Uri.EscapeDataString(Muestra)}";
+            var response = await _httpClient.PutAsync(url, content);
+            return response;
+
+            //var response = await _httpClient.PutAsync("AgregaResultadoPrueba", content);
+            //return response;
+        }
+
+        public async Task<HttpResponseMessage> ValidarExpedientePruebas(string strExpedientePruebas)
+        {
+            using var httpClient = new HttpClient();
+            var response = await _httpClient.GetAsync("ValidacionExpediente/" + strExpedientePruebas);
             return response;
         }
 
-        public async Task<HttpResponseMessage> TerminaPruebaExpediente(TerminaPruebaExpedienteDTO terminaPruebaExpediente)
+        public async Task<HttpResponseMessage> TerminaPruebaExpediente(string strExpedientePruebas)
         {
-            var json = JsonSerializer.Serialize(terminaPruebaExpediente);
+            var json = JsonSerializer.Serialize(strExpedientePruebas);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("TerminaPruebasExpediente", content);
+            var response = await _httpClient.PutAsync("TerminarPruebasExpediente/" + strExpedientePruebas, content);
             return response;
         }
 
-        public async Task<HttpResponseMessage> PruebasNoSatisfactorias(string Expediente)
+        public async Task<HttpResponseMessage> ConsulaExpediente(string strExpedientePruebas)
         {
-            var response = await _httpClient.GetAsync("PruebasNoSatisfactorias" + "/" + Expediente);
+            var content = new StringContent("", Encoding.UTF8, "application/json");
+            var response = await _httpClient.PutAsync("ConsulaExpediente/" + strExpedientePruebas, content);
+
             return response;
         }
 

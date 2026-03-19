@@ -27,4 +27,13 @@ namespace ApiClientLibrary.Models
         public int cantidadAFabricar { get; set; }
     }
 
+    public class OrdenFabricacionConsultaDTO
+    {
+        public string id { get; set; }
+        public string claveOrdenFabricacion { get; set; }
+        public string loteFabricacion { get; set; }
+        public ProductosDTO idProducto { get; set; }
+        public List<DetalleFabricacionDTO> detalleFabricacion { get; set; }
+    }
+
 }
